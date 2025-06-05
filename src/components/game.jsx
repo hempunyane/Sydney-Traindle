@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import StationInput from './stationInput';
-import StationTable from './stationTable';
-import MobileLayout from './mobileLayout';
+import StationInput from './StationInput';
+import StationTable from './StationTable';
+import MobileLayout from './MobileLayout';
 import trainNetwork from "../helper/TrainNetwork";
 import {motion} from 'framer-motion';
 import Tutorial from './Tutorial';

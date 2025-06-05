@@ -1,11 +1,11 @@
 import React, { createRef } from 'react';
 import trainNetwork from "../helper/TrainNetwork";
 import styled from 'styled-components';
-import { TrainlinePopout, PieIconGenerator } from './trainlineIconDisplays';
-import { Guess, GuessesLeft } from './guesses';
-import Timer from './timer';
-import SearchBox from './searchBox';
-import MobileContext from './mobileContext';
+import { TrainlinePopout, PieIconGenerator } from './TrainlineIconDisplays';
+import { Guess, GuessesLeft } from './Guesses';
+import Timer from './Timer';
+import SearchBox from './SearchBox';
+import MobileContext from './MobileContext';
 
 //takes props: 
 //  Function closeHTP = a function that changes the a state in the parent to control visibility
@@ -357,65 +357,9 @@ class MobileLayout extends React.Component {
             this.updateTimerState(true)
         }
         this.setState((prevState) => ({
-            guesses: [new Guess(stationGuess, this.props.answerStation), ...prevState.guesses],
+            guesses: [{guess: stationGuess, answer: this.props.answerStation}, ...prevState.guesses],
             remainingGuesses: prevState.remainingGuesses-1
         }));
-    }
-
-    getCorrectColour(type, data){
-        if (type === "distance"){
-            let answerDist = this.props.answerStation
-            let tolerance = answerDist*0.2
-            if (data === 0){
-                return "green"
-            }
-            if (data < answerDist+tolerance && data > answerDist-tolerance){
-                return "yellow"
-            }
-            return "red"
-        }
-        if (type === "stops"){
-            if (data === 0) {
-                return "green"
-            }
-            if (data < 10){
-                return "yellow"
-            }
-            return "red"
-        }
-        if (type === "lines"){
-            let hasCommon = false
-            let hasUncommon = false
-            let answerStationLines = trainNetwork[this.props.answerStation]["lines"]
-
-            if (data.length != answerStationLines.length){
-                hasUncommon = true
-            }
-            //makes type the smaller of the two
-            if (data.length > answerStationLines.length){
-                let temp = answerStationLines
-                answerStationLines = data
-                data = temp
-            }
-            
-            //loop through and check for matches
-            for (let i = 0; i < data.length; i++){
-                if (answerStationLines.includes(data[i])){
-                    hasCommon = true
-                }
-                else {
-                    hasUncommon = true
-                }
-            }
-
-            if (hasCommon && !hasUncommon){
-                return "green"
-            }
-            if (hasCommon && hasUncommon){
-                return "yellow"
-            }
-            return "red"
-        }
     }
 
     managePopout = (stationKey, show) => {
@@ -424,106 +368,26 @@ class MobileLayout extends React.Component {
             popout.updatePopout(show);
         }
     }
-    
-    //this entire function will be removed from here and a less disgusting version will be written into a guess component in guesses.jsx so dont worry bout this
-    renderGuesses(guess, renderBig, includeTips) {
-        if (renderBig){
-            return <div className="last-guessed-container">
-                <div className="relative">
-                    <div className="popout-icon-align">
-                        <div 
-                            onMouseEnter={() => this.managePopout(guess.stationName, true)}
-                            onMouseLeave={() => this.managePopout(guess.stationName, false)}
-                        >
-                            {guess.lines.length === 1 ? (
-                                <img src={guess.lineIcon}></img>
-                            ) : (
-                                <PieIconGenerator key={guess.stationName} lines={guess.lines}/>
-                            )}
-                        </div>
-                    </div>
-                    {includeTips ? (
-                        <div className={"large-icon-guess-indicator "+this.getCorrectColour("lines", guess.lines)}></div>
-                    ) : (null)}
-                </div>
-                <div className="symbol-splitter">
-                    <div className="large-answer-text">
-                        <h2 className="answer-field-h2">{guess.stationName}</h2>
-                        <h3 className="answer-field-h3">{guess.distanceFromCentral}km from Central</h3>
-                    </div>
-                    {includeTips ? (
-                        <div className="symbol-container">
-                            <div>
-                                <h3 className="answer-field-h3">Dist.</h3>
-                                <div className={"hint-circle "+this.getCorrectColour("distance", guess.distance)}>
-                                    <img src={guess.distanceIcon}></img>
-                                </div>
-                            </div>
-                            <div>
-                                <h3 className="answer-field-h3">Stops</h3>
-                                <div className={"hint-circle "+this.getCorrectColour("stops", guess.stationsAway)}>
-                                    <h2>{guess.stationsAway}</h2>
-                                </div>
-                            </div>
-                        </div>
-                    ) : (null)}
 
-                </div>
-            </div>
-        }
+    renderCurrent(){
+        return this.state.guesses.length ? (
+            <Guess
+                stationGuess={this.state.guesses[0].guess}
+                answerStation={this.state.guesses[0].answer}
+                current={true}
+            />
+        ) : null
+    }
 
-        //sets alternate background colour for every other guess
-        let alternateBG = "previous-guess-container"
-        if ((this.state.guesses.indexOf(guess)+1)%2){
-            alternateBG += " previous-guess-background"
-        }
-
-        return <div className={alternateBG}>
-            <div className="small-answer-group">
-                <div className="relative">
-                    <div className="popout-icon-align">
-                        {guess.lines.length === 1 ? (null) : (
-                            <TrainlinePopout
-                                ref={el => this.trainlineRefs[guess.stationName] = el}
-                                colour={this.getCorrectColour("lines", guess.lines)}
-                                trainlines={guess.lines}
-                            />
-                        )}
-                        <div
-                            onMouseEnter={() => this.managePopout(guess.stationName, true)}
-                            onMouseLeave={() => this.managePopout(guess.stationName, false)}
-                            className="previous-guess-icon"
-                        >
-                            {guess.lines.length === 1 ? (
-                                <img className="previous-guess-icon" src={guess.lineIcon}></img>
-                            ) : (
-                                <PieIconGenerator key={guess.stationName} isSmall={true} lines={guess.lines}/>
-                            )}
-                        </div>
-
-                    </div>
-                    {includeTips ? (
-                        <div className={"small-icon-guess-indicator "+this.getCorrectColour("lines", guess.lines)}></div>
-                    ) : (null)}
-                </div>
-                <div>
-                    <h2 className="answer-field-h2 no-margin">{guess.stationName}</h2>
-                    <h3 className="answer-field-h3 no-margin">{guess.distanceFromCentral} km from Central</h3>
-                </div>
-            </div>
-            {includeTips ? (
-                <div className="small-answer-group">
-                    <div className={"hint-circle "+this.getCorrectColour("distance", guess.distance)}>
-                        <img className="previous-guess-symbol" src={guess.distanceIcon}></img>
-                    </div>
-                    <div className={"hint-circle "+this.getCorrectColour("stops", guess.stationsAway)}>
-                        <div className="previosu-guess-symbol center-text-symbol">
-                            <h2>{guess.stationsAway}</h2>
-                        </div>
-                    </div>
-                </div>
-            ) : (null)}
-        </div>
+    renderHistory(){
+        return this.state.guesses.slice(1).map((guess, i) => (
+            <Guess
+                key={i}
+                stationGuess={guess.guess}
+                answerStation={guess.answer}
+                current={false}
+            />
+        ));
     }
 
     //function which returns the correct screen to be rendered depending on different state options
@@ -533,14 +397,10 @@ class MobileLayout extends React.Component {
         }
 
         let gameScreen = <div className="answer-field-body">
-            {this.renderGuesses(this.state.guesses[0], true, true)}
+            {this.renderCurrent()}
             <div className="history-container">
                 <h3 className="answer-field-h3">History</h3>
-                {
-                    this.state.guesses.slice(1).map((guess, i) => 
-                        this.renderGuesses(guess, false, true)
-                    )
-                }
+                {this.renderHistory()}
             </div>
             <div className="answer-footer">
                 <div className="footer-button-container">
@@ -588,7 +448,6 @@ class MobileLayout extends React.Component {
 
     render() {
         const stations = Object.keys(trainNetwork);
-        
         return <MobileContext.Provider value={{getGuessesLeft: this.getGuessesLeft}}>
             <div className='answer-field shadow'>
                 {this.state.showMap ? (

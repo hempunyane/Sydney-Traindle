@@ -1,5 +1,5 @@
 import React from 'react';
-import Hint from './hint.jsx'
+import Hint from './Hint.jsx'
 const stationInput = ({ onStationSelect, suggestions, answer, onWin }) => {
   // states for current input, suggestions based on input, the highligghted suggestion and whether or not to show suggestions
   const [input, setInput] = React.useState('');

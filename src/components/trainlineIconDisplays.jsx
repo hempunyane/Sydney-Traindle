@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import { trainlineColours, trainlineList } from '../helper/TrainlineUtils';
 
 export class PieIconGenerator extends React.Component {
     constructor(props) {
@@ -86,17 +87,6 @@ export class PieIconGenerator extends React.Component {
     componentDidMount() {
         const canvas = this.canvasRef.current;
         const ctx = canvas.getContext("2d");
-        const colours = {
-            "T1": `rgb(246, 145, 16)`,
-            "T2": `rgb(8, 151, 209)`,
-            "T3": `rgb(242, 93, 27)`,
-            "T4": `rgb(30, 86, 168)`,
-            "T5": `rgb(196, 17, 144)`,
-            "T7": `rgb(105, 124, 138)`,
-            "T8": `rgb(10, 150, 73)`,
-            "T9": `rgb(210, 26, 45)`,
-            "M1": `rgb(0, 150, 159)`
-        } 
     
         // Set canvas dimensions
         if (this.props.isSmall){
@@ -127,7 +117,7 @@ export class PieIconGenerator extends React.Component {
         let angle = 0
         let angleIncrement = 360/this.props.lines.length
         for (let i = 0; i < this.props.lines.length; i++){
-            ctx.fillStyle = colours[this.props.lines[i]]
+            ctx.fillStyle = trainlineColours[this.props.lines[i]]
             ctx.beginPath()
             ctx.moveTo(...middleCoords)
             ctx.lineTo(...this.angleToCoords(angle, this.props.isSmall))
@@ -288,5 +278,95 @@ export class TrainlinePopout extends React.Component {
             </PopoutContainer>
         }
         return null
+    }
+}
+
+
+
+const TrainlineBarContainer = styled.div`
+    width: 100%;
+    height: ${props => props.height}px;
+    background: ${props => props.gradient};
+`
+
+const OpacityScaler = styled.div`
+    * {
+        opacity: ${props => props.opacity};
+    }
+`
+
+//takes props: correctnessColour, lines, height(optional overload), noGap(renders full colour vs with whitespace,  false by deafult)
+export class TrianlineBar extends React.Component {
+    constructor(){
+        this.state = {
+            height: this.props.height ?? 5, //5px is default for undefined heights
+            correctnessOpacity: 0
+        }
+    }
+
+    onOpen() {
+        //start stretch
+            //use cubic-bezier on this.state.height
+        //start colour change / opacity change
+            //try both linear and cubic-bezeir
+        //start icon slide down
+            //use same cubic-bezeir
+    }
+
+    onClose() {
+        //reverse of onOpen
+    }
+
+    structureGradient = () => {
+        let lineColours = this.getLineColours()
+        let colourSegments = []
+        if (!this.props.noGap){
+            for (let i = 0; i < lineColours.length; i++){
+                colourSegments.push(lineColours[i]+i*10+`%,`)
+                colourSegments.push(lineColours[i]+(i*10+10)+`%,`)
+            }
+        }
+        else {
+            let stepSize = 100/this.props.lineColours
+            for (let i = 0; i < lineColours.length; i++){
+                if (lineColours[i] != `rgba(255, 255, 255, 0)`){
+                    colourSegments.push(lineColours[i]+i*stepSize)
+                    colourSegments.push(lineColours[i]+(i*stepSize+stepSize))
+                }
+            }
+        }
+        return `linear-gradient(to-right, `+colourSegments.join(', ')+`)`
+    }
+
+    getLineColours(){
+        let colourList = []
+        for (let i = 0; i < trainlineList.length; i++){
+            if (this.props.lines.includes(trainlineList[i])){
+                colourList.push(trainlineColours[trainlineList[i]]) //adds trainline colour to colourList
+            }
+            else { //adds blank space
+                colourList.push(rgba(255, 255, 255, 0))
+            }
+        }
+        return colourList
+    }
+
+    childRenderer(){
+        if (this.state.correctnessOpacity > 0){
+            return <OpacityScaler opacity={this.state.correctnessOpacity}>
+                {this.props.children}
+            </OpacityScaler>
+        }
+        return null
+    }
+
+    render(){
+        return <TrainlineBarContainer height={this.props.height} lineColours={this.structureGradient()}> {/* this one is for trainline colours */}
+            <OpacityScaler opacity={this.state.correctnessOpacity}>
+                <TrainlineBarContainer height={this.props.height} lineColours={[this.props.correctnessColour]}> {/* this one is for correctness colour */}
+                    {this.childRenderer()}
+                </TrainlineBarContainer>
+            </OpacityScaler>
+        </TrainlineBarContainer>
     }
 }

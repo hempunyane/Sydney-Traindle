@@ -1,11 +1,15 @@
 import styled from 'styled-components';
 import { StationText, HeadingText, InfoText } from './TextStyles';
 
+// keep height fixed px, as long as it is enough to contain train lines.
 const Container = styled('div')`
     display: flex;
     flex-direction: row;
-    height: 30%;
+    height: 120px;
     width: 100%;
+    padding: 5px;
+    margin-bottom: 15px;
+    border-bottom: 2px solid #777;
 `;
 
 const Column1 = styled('div')`

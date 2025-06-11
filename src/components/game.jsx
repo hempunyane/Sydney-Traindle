@@ -5,7 +5,6 @@ import styled from 'styled-components';
 // import { TrainlinePopout, PieIconGenerator } from './trainlineIconDisplays';
 // import { Guess, GuessesLeft } from './guesses';
 // import Timer from './timer';
-// import SearchBox from './searchBox';
 //import MobileContext from './mobileContext';
 
 import CurrentStation from './CurrentStation';
@@ -17,7 +16,6 @@ const GameContainer = styled.div.attrs(() => ({}))`
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between;
   height: 100vh;
   width: ${props => (props.$isMobile ? '100%' : '600px')};
   box-sizing: border-box;
@@ -41,7 +39,6 @@ function Game() {
             <GameContainer $isMobile={isMobile}>
                 <CurrentStation/>
                 <StationHistory/>
-                <Keyboard/>
             </GameContainer>
         </div>
     )

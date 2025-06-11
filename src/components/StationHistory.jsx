@@ -56,7 +56,7 @@ function StationHistory() {
 
     return (
         <Container>
-            <HeadingText>History</HeadingText>
+            <HeadingText style={{ paddingBottom: '10px' }}>History</HeadingText>
             <StationAccordion
             >
                 <StationCollapsed>

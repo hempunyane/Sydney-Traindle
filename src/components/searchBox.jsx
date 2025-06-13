@@ -12,63 +12,66 @@ const AutocompleteContainer = styled.div`
 const Autocomplete = styled.div`
     display: flex;
     width: 100%;
+    height: 15vh;
+    border-bottom: 2px solid #777;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    position: relative;
 `;
 
-const InputWithSuggestion = styled.div`
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-`;
-
-const SingleSuggestionContainer = styled.div`
-    margin-top: 5px;
-    height: 40px;
+const InputContainer = styled.div`
+    position: relative;
+    flex: 2;
     display: flex;
     align-items: center;
 `;
 
 const StyledInput = styled.input.attrs({
     tabIndex: -1,
-  })`
-    margin: 25px 0px 0px 20px;
-    width: 300px;
-    background-color: #d9d9d9;
+})`
+    margin: auto 0px 5px 0px;
+    width: 100%;
     border: none;
-    border-radius: 5px;
-    font-size: 16pt;
+    font-size: 20pt;
     color: #000;
     outline: none;
-    padding: 8px 10px;
     caret-color: black;
-  
+    background: transparent;
+    position: relative;
+    z-index: 2;
     -webkit-user-select: none;
     user-select: none;
     touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
-  
+
     &::placeholder {
-      color: #fdfdfc;
+        color: #919191;
     }
-  `;
+`;
   
-  const SingleSuggestion = styled.div`
-    margin-left: 20px;
-    width: 300px;
-    height: 25px;
-    background: #f1f1f1;
-    border-radius: 5px;
-    font-size: 15pt;
-    color: #000;
-    padding: 8px 10px;
-  
+const AutocompleteSuggestion = styled.div`
+    position: absolute;
+    left: 0;
+    bottom: 0px;
+    margin: auto 0px 6px 2px;
+    font-size: 20pt;
+    color: #777;
+    pointer-events: none;
+    z-index: 1;
     display: flex;
     align-items: center;
-  
-    &:hover {
-      background-color: #f6891f;
-      cursor: pointer;
-    }
-  `;
+    font-family: 'Arial', sans-serif;
+`;
+
+const VisiblePart = styled.span`
+    color: transparent;
+    white-space: pre;
+`;
+
+const SuggestionPart = styled.span`
+    color: #777;
+    white-space: pre;
+`;
 
 class SearchBox extends React.PureComponent {
     constructor(props) {
@@ -79,47 +82,70 @@ class SearchBox extends React.PureComponent {
             activeSuggestionIndex: 0,
             showSuggestions: false
         };
-        this.suggestionRefs = [];
+    }
+
+    componentDidMount() {
+        window.addEventListener("keydown", this.handleGlobalKeyDown);
+    }
+    
+    componentWillUnmount() {
+        window.removeEventListener("keydown", this.handleGlobalKeyDown);
     }
 
     getFilteredSuggestions = (userInput) => {
-        if (!userInput) return [];
-      
+        if (!userInput) return null;
+        
         const lcInput = userInput.toLowerCase();
         const { suggestions } = this.props;
-      
-        let firstMatch = suggestions.find(s => s.toLowerCase().startsWith(lcInput));
-        if (firstMatch) return [firstMatch];
-      
-        firstMatch = suggestions.find(s => s.toLowerCase().includes(lcInput));
-        return firstMatch ? [firstMatch] : [];
+        
+        // Remove 'station' from suggestions for matching
+        const cleanedSuggestions = suggestions.map(s => s.replace(/\s*station$/i, ''));
+        
+        // Only find matches that START WITH the input
+        const firstMatch = cleanedSuggestions.find(s => 
+            s.toLowerCase().startsWith(lcInput)
+        );
+        
+        return firstMatch || null;
+    };
+
+    handleGlobalKeyDown = (e) => {
+        const key = e.key;
+        if (key.length > 1 && key !== "Enter" && key !== "Backspace") {
+            return;
+        }
+
+        e.preventDefault();
+        if (this.inputRef) {
+            this.inputRef.focus();
+        }
+        
+        this.handleKeyPress(key);
     };
 
     handleKeyPress = (key) => {
         const input = this.inputRef;
         if (!input) return;
-      
+        
         const { value } = this.state;
         const start = input.selectionStart;
         const end = input.selectionEnd;
-      
-        let newValue = value;
-        let newCursorPos = start;
-      
+        
         if (key === 'Enter') {
-            const selectedGuess = this.state.filteredSuggestions[this.state.activeSuggestionIndex];
-            if (selectedGuess) {
-                this.props.submitGuess(selectedGuess);
+            if (this.state.currentSuggestion) {
+                this.props.onSubmit(this.state.currentSuggestion + ' Station');
                 this.setState({
-                value: '',
-                showSuggestions: false,
-                filteredSuggestions: [],
-                activeSuggestionIndex: 0
+                    value: '',
+                    currentSuggestion: "",
+                    showSuggestion: false
                 });
             }
             return;
         }
-      
+        
+        let newValue = value;
+        let newCursorPos = start;
+        
         if (key === 'Backspace') {
             if (start === end && start > 0) {
                 newValue = value.slice(0, start - 1) + value.slice(end);
@@ -132,103 +158,76 @@ class SearchBox extends React.PureComponent {
             newValue = value.slice(0, start) + key + value.slice(end);
             newCursorPos = start + key.length;
         }
-      
-        const filteredSuggestions = this.getFilteredSuggestions(newValue);
-      
-        this.setState(prev => {
-            if (
-                prev.filteredSuggestions === filteredSuggestions &&
-                prev.activeSuggestionIndex === 0 &&
-                prev.showSuggestions === true
-            ) {
-                return null;
-            }
-            return {
-                filteredSuggestions,
-                activeSuggestionIndex: 0,
-                showSuggestions: true
-            };
+        
+        const suggestion = this.getFilteredSuggestions(newValue);
+        const showSuggestion = Boolean(suggestion && newValue);
+        
+        this.setState({
+            value: newValue,
+            currentSuggestion: suggestion || "",
+            showSuggestion
         });
-      
+        
         this.updateInputValue(newValue, newCursorPos);
         this.inputRef?.focus();
     };
 
-    handleClick = (suggestion) => {
-        this.props.submitGuess(suggestion);
-        this.setState({
-            value: '',
-            showSuggestions: false
-        });
-    };
-
-    handleSuggestionClick = () => {
-        const { filteredSuggestions } = this.state;
-        if (filteredSuggestions[0]) {
-            this.handleClick(filteredSuggestions[0]);
-        }
-      };
-
-    handleHover = (index) => {
-        this.setState({ activeSuggestionIndex: index });
-    };
-
     updateInputValue = (newValue, newCursorPos) => {
         this.setState({ value: newValue }, () => {
-          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
                 this.inputRef.focus();
                 this.inputRef.setSelectionRange(newCursorPos, newCursorPos);
             });
         });
     };
 
-    renderSuggestions = () => {
-        const { showSuggestions, value, filteredSuggestions } = this.state;
-      
-        return (
-            <SingleSuggestionContainer>
-                {showSuggestions && value && filteredSuggestions.length > 0 ? (
-                <SingleSuggestion onClick={this.handleSuggestionClick}>
-                    {filteredSuggestions[0]}
-                </SingleSuggestion>
-                ) : null}
-            </SingleSuggestionContainer>
-        );
+    handleInputSelect = (e) => {
+        e.preventDefault();
+        this.inputRef.focus();
+        setTimeout(() => {
+            this.inputRef.setSelectionRange(
+                this.inputRef.selectionStart, 
+                this.inputRef.selectionEnd
+            );
+        }, 0);
     };
-      
+
+
+
     render() {
-    return (
-        <AutocompleteContainer>
-        <Autocomplete>
-            <InputWithSuggestion>
-            <StyledInput
-                ref={(ref) => this.inputRef = ref}
-                value={this.state.value}
-                placeholder={this.props.dummyText}
-                autoComplete="off"
-                inputMode="none"
-                onChange={() => {}}
-                onTouchStart={(e) => {
-                    e.preventDefault();
-                    this.inputRef.focus();
-                    setTimeout(() => {
-                        this.inputRef.setSelectionRange(this.inputRef.selectionStart, this.inputRef.selectionEnd);
-                    }, 0);
-                }}
-            />
-            {this.renderSuggestions()}
-            </InputWithSuggestion>
-            <GuessesLeft />
-        </Autocomplete>
-        <Keyboard 
-            onKeyPress={this.handleKeyPress}
-            onLegendClick={this.props.onLegendClick}
-            onMapClick={this.props.onMapClick}
-            disableEnter={this.state.filteredSuggestions.length === 0}
-        />
-        </AutocompleteContainer>
-    );
+        const { value, currentSuggestion, showSuggestion } = this.state;
+        const suggestionPart = showSuggestion 
+            ? currentSuggestion.slice(value.length) 
+            : "";
+            
+        return (
+            <AutocompleteContainer>
+                <Autocomplete>
+                    <InputContainer>
+                        <StyledInput
+                            ref={(ref) => this.inputRef = ref}
+                            value={value}
+                            placeholder="Station Name"
+                            autoComplete="off"
+                            inputMode="none"
+                            onChange={() => {}}
+                            onTouchStart={this.handleInputSelect}
+                        />
+                        {showSuggestion && (
+                            <AutocompleteSuggestion>
+                                <VisiblePart>{value}</VisiblePart><SuggestionPart>{suggestionPart}</SuggestionPart>
+                            </AutocompleteSuggestion>
+                        )}
+                    </InputContainer>
+                    <GuessesLeft guessesLeft={this.props.guessesLeft} />
+                </Autocomplete>
+                <Keyboard 
+                    onKeyPress={this.handleKeyPress}
+                    disableEnter={!showSuggestion}
+                />
+            </AutocompleteContainer>
+        );
     }
 }
 
-export default SearchBox
+export default SearchBox;

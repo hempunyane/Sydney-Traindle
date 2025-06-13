@@ -7,13 +7,12 @@ const KeyboardContainer = styled.div`
   gap: 15px;
   border-radius: 8px;
   margin-top: 10px;
-  margin-bottom: 30px;
 `;
 
 const KeyboardRow = styled.div`
   display: flex;
   justify-content: center;
-  gap: 10px;
+  gap: 2.5%;
 `;
 
 const Key = styled.button`
@@ -21,7 +20,7 @@ const Key = styled.button`
   user-select: none;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
-  min-width: 40px;
+  width: clamp(0px, 8%, 65px);
   height: 50px;
   border: none;
   border-radius: 5px;
@@ -42,7 +41,7 @@ const Key = styled.button`
   }
   
   &.enter {
-    min-width: 65px;
+    width: clamp(40px, 15vw, 65px);
     font-weight: bold;
     font-size: 16px;
   }
@@ -58,13 +57,14 @@ const Key = styled.button`
   }
   
   &.backspace {
-    min-width: 65px;
+    width: clamp(40px, 12vw, 65px);
   }
 
   &.spacebar {
     flex-grow: 1;
     max-width: 250px;
     height: 44px;
+    margin-right: 10px;
     margin-bottom: 40px;
   }
 `;
@@ -115,7 +115,7 @@ const Text = styled.div`
   margin-top: 4px;
 `;
 
-function Keyboard({onKeyPress, onLegendClick, onMapClick, disableEnter}) {
+function Keyboard({onKeyPress, disableEnter}) {
   const topRow = ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'];
   const middleRow = ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'];
   const bottomRow = ['z', 'x', 'c', 'v', 'b', 'n', 'm'];
@@ -123,6 +123,14 @@ function Keyboard({onKeyPress, onLegendClick, onMapClick, disableEnter}) {
   const handleKeyClick = (key) => {
     onKeyPress(key);
   };
+
+  const handleMapClick = () => {
+    console.log("Map Clicked")
+  }
+
+  const handleLegendClick = () => {
+    console.log("Legend Clicked")
+  }
 
   return (
     <KeyboardContainer>
@@ -154,7 +162,7 @@ function Keyboard({onKeyPress, onLegendClick, onMapClick, disableEnter}) {
 
       <BottomButtonRow>
         <FooterButtonContainer>
-          <FooterIconWrapper onClick={onLegendClick}>
+          <FooterIconWrapper onClick={handleLegendClick}>
             <img src="./Icons/Legend.svg" alt="Legend" width="35" height="35"/>
           </FooterIconWrapper>
           <div>Legend</div>
@@ -165,7 +173,7 @@ function Keyboard({onKeyPress, onLegendClick, onMapClick, disableEnter}) {
         </Key>
 
         <FooterButtonContainer>
-          <FooterButton className="cursor-hover" onClick={onMapClick}>
+          <FooterButton className="cursor-hover" onClick={handleMapClick}>
             <FooterIcon src="./Icons/pin.svg" alt="Map" />
           </FooterButton>
           <Text>Map</Text>

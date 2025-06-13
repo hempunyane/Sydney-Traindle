@@ -65,31 +65,34 @@ export class Guess{
 }
 
 export class GuessesLeft extends React.Component {
-    static contextType = MobileContext;
-
-    render(){
+    render() {
         const GuessesLeftContainer = styled.div`
+            margin: 0px;
+            margin-top: auto;
             display: flex;
             flex-direction: column;
             align-items: flex-end;
             position: relative;
-            top: 9px;
             flex: 1;
 
+            h3 {
+                font-size: 11pt;
+                font-weight: 100;
+            }
+
             h2 {
-                font-size: 32pt;
+                margin: 0px;
+                font-size: 36pt;
                 font-family: 'Inter';
                 font-weight: 400;
                 color: #f6891f;
             }
         `;
 
-        const guesses = this.context.getGuessesLeft();
-
         return (
             <GuessesLeftContainer className="guesses-left-container end-guesses">
-                <h3 className="answer-field-h3 no-margin">Guesses</h3>
-                <h2 className="no-margin">{guesses} left</h2>
+                <h3>Guesses</h3>
+                <h2>{this.props.guessesLeft} left</h2>
             </GuessesLeftContainer>
         );
     }

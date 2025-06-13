@@ -84,6 +84,14 @@ class SearchBox extends React.PureComponent {
         };
     }
 
+    componentDidMount() {
+        window.addEventListener("keydown", this.handleGlobalKeyDown);
+    }
+    
+    componentWillUnmount() {
+        window.removeEventListener("keydown", this.handleGlobalKeyDown);
+    }
+
     getFilteredSuggestions = (userInput) => {
         if (!userInput) return null;
         
@@ -99,6 +107,20 @@ class SearchBox extends React.PureComponent {
         );
         
         return firstMatch || null;
+    };
+
+    handleGlobalKeyDown = (e) => {
+        const key = e.key;
+        if (key.length > 1 && key !== "Enter" && key !== "Backspace") {
+            return;
+        }
+
+        e.preventDefault();
+        if (this.inputRef) {
+            this.inputRef.focus();
+        }
+        
+        this.handleKeyPress(key);
     };
 
     handleKeyPress = (key) => {
@@ -159,6 +181,19 @@ class SearchBox extends React.PureComponent {
         });
     };
 
+    handleInputSelect = (e) => {
+        e.preventDefault();
+        this.inputRef.focus();
+        setTimeout(() => {
+            this.inputRef.setSelectionRange(
+                this.inputRef.selectionStart, 
+                this.inputRef.selectionEnd
+            );
+        }, 0);
+    };
+
+
+
     render() {
         const { value, currentSuggestion, showSuggestion } = this.state;
         const suggestionPart = showSuggestion 
@@ -176,16 +211,7 @@ class SearchBox extends React.PureComponent {
                             autoComplete="off"
                             inputMode="none"
                             onChange={() => {}}
-                            onTouchStart={(e) => {
-                                e.preventDefault();
-                                this.inputRef.focus();
-                                setTimeout(() => {
-                                    this.inputRef.setSelectionRange(
-                                        this.inputRef.selectionStart, 
-                                        this.inputRef.selectionEnd
-                                    );
-                                }, 0);
-                            }}
+                            onTouchStart={this.handleInputSelect}
                         />
                         {showSuggestion && (
                             <AutocompleteSuggestion>
@@ -197,8 +223,6 @@ class SearchBox extends React.PureComponent {
                 </Autocomplete>
                 <Keyboard 
                     onKeyPress={this.handleKeyPress}
-                    onLegendClick={this.toggleLegend}
-                    onMapClick={this.toggleMap}
                     disableEnter={!showSuggestion}
                 />
             </AutocompleteContainer>

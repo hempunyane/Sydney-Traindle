@@ -115,7 +115,7 @@ const Text = styled.div`
   margin-top: 4px;
 `;
 
-function Keyboard({onKeyPress, onLegendClick, onMapClick, disableEnter}) {
+function Keyboard({onKeyPress, disableEnter}) {
   const topRow = ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'];
   const middleRow = ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'];
   const bottomRow = ['z', 'x', 'c', 'v', 'b', 'n', 'm'];
@@ -123,6 +123,14 @@ function Keyboard({onKeyPress, onLegendClick, onMapClick, disableEnter}) {
   const handleKeyClick = (key) => {
     onKeyPress(key);
   };
+
+  const handleMapClick = () => {
+    console.log("Map Clicked")
+  }
+
+  const handleLegendClick = () => {
+    console.log("Legend Clicked")
+  }
 
   return (
     <KeyboardContainer>
@@ -154,7 +162,7 @@ function Keyboard({onKeyPress, onLegendClick, onMapClick, disableEnter}) {
 
       <BottomButtonRow>
         <FooterButtonContainer>
-          <FooterIconWrapper onClick={onLegendClick}>
+          <FooterIconWrapper onClick={handleLegendClick}>
             <img src="./Icons/Legend.svg" alt="Legend" width="35" height="35"/>
           </FooterIconWrapper>
           <div>Legend</div>
@@ -165,7 +173,7 @@ function Keyboard({onKeyPress, onLegendClick, onMapClick, disableEnter}) {
         </Key>
 
         <FooterButtonContainer>
-          <FooterButton className="cursor-hover" onClick={onMapClick}>
+          <FooterButton className="cursor-hover" onClick={handleMapClick}>
             <FooterIcon src="./Icons/pin.svg" alt="Map" />
           </FooterButton>
           <Text>Map</Text>

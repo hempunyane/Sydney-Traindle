@@ -192,8 +192,6 @@ class SearchBox extends React.PureComponent {
         }, 0);
     };
 
-
-
     render() {
         const { value, currentSuggestion, showSuggestion } = this.state;
         const suggestionPart = showSuggestion 

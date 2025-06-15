@@ -12,7 +12,6 @@ const AutocompleteContainer = styled.div`
 const Autocomplete = styled.div`
     display: flex;
     width: 100%;
-    height: 15vh;
     border-bottom: 2px solid #777;
     margin-bottom: 15px;
     padding-bottom: 15px;

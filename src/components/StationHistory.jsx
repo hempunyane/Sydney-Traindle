@@ -8,29 +8,50 @@ import AccordionSummary from '@mui/material/AccordionSummary';
 const Container = styled('div')`
     display: flex;
     flex-direction: column;
-    height: 30%;
+    max-height: 100vh;
     width: 100%;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    
+    &::-webkit-scrollbar {
+        width: 6px;
+    }
+    
+    &::-webkit-scrollbar-thumb {
+        background-color: rgba(0,0,0,0.2);
+        border-radius: 3px;
+    }
 `;
 
 // wrapper for the entire accordion
 const StationAccordion = styled(Accordion)`
     width: 100%;
-    min-height: 30px;
+    margin: 0 !important;
     box-shadow: none !important;
-
+    border-radius: 0 !important;
+    border-bottom: 1px solid #e0e0e0;
+    
+    &:before {
+        display: none;
+    }
+    
     &.Mui-expanded {
-        min-height: 60px;
+        margin: 0 !important;
     }
 `;
 
 // the accordion when collapsed
 const StationCollapsed = styled(AccordionSummary)`
-    padding-left: 0 !important;
-    padding-right: 0 !important;
-    min-height: 30px;
+    padding: 0 8px !important;
+    min-height: 48px !important;
+    
     &.Mui-expanded {
-        min-height: 30px; /* keep summary height fixed */
-        border-bottom: 1px solid #e0e0e0;
+        min-height: 48px !important;
+    }
+    
+    .MuiAccordionSummary-content {
+        margin: 8px 0 !important;
+        align-items: center;
     }
 `;
 
@@ -38,54 +59,117 @@ const FlexWrapper = styled('div')`
     display: flex;
     width: 100%;
     justify-content: space-between;
+    align-items: center;
+    gap: 8px;
 `;
 
-const HintWrapper = styled('div')`
-    display: flex;
-    width: 30%;
-    justify-content: space-between;
-`;
-
-// the accordion when expanded on click
 const StationExpanded = styled(AccordionDetails)`
-    padding: 8px 16px;
+    padding: 8px 16px !important;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
 `;
 
-const StyledImg = styled('img')`
-    margin-bottom: 0px;
+const MetricsContainer = styled('div')`
+    display: grid;
+    grid-template-columns: auto auto auto;
+    align-items: center;
+    justify-items: end;
+    gap: 8px;
+    min-width: 200px;
+`;
+
+const MetricItem = styled('div')`
+    display: flex;
+    justify-content: flex-end;
+    min-width: 70px;
+`;
+
+const DistanceText = styled(MetricItem)`
+    &::after {
+        content: 'km';
+        margin-top: auto;
+        margin-left: 2px;
+    }
+`;
+
+const ArrowIcon = styled.img`
     width: 25px;
     height: 25px;
+    margin: 0 4px;
 `;
 
-function StationHistory({ guesses, correctStation }) {
+const LineIcon = styled.img`
+    width: 30px;
+    height: 30px;
+`;
+
+
+const getStationRanges = (stationsAway) => {
+    let ranges = [
+      "10-20",
+      "20-30",
+      "30-40",
+      "40-50",
+      "50-60",
+      "60-70"
+    ]
+    let distRange = Math.floor(stationsAway/10);
+    if (distRange == 0) return stationsAway.toString().padStart(4, ' ');
+    return ranges[distRange-1];
+}
+
+function formatDistance(distance) {
+    return parseFloat(distance).toFixed(2);
+}
+
+function StationHistory({ guesses }) {
     return (
         <Container>
-            <HeadingText style={{ paddingBottom: '10px' }}>History</HeadingText>
-            {guesses.map((station, index) => {
-                console.log(station)
-
-                return (
-                    <StationAccordion key={index}>
-                        <StationCollapsed>
-                            <FlexWrapper>
-                                <HistoryInfoText>{station.stationName}</HistoryInfoText>
-                                <HintWrapper>
+            <HeadingText style={{ 
+                paddingBottom: '10px', 
+                position: 'sticky', 
+                top: 0, 
+                background: 'white', 
+                zIndex: 1 
+            }}>
+                History
+            </HeadingText>
+            {guesses.map((station, index) => (
+                <StationAccordion key={index} TransitionProps={{ unmountOnExit: true }}>
+                    <StationCollapsed
+                        aria-controls={`panel${index}-content`}
+                        id={`panel${index}-header`}
+                    >
+                        <FlexWrapper>
+                            <HistoryInfoText style={{ flex: 1 }}>
+                                {station.stationName.replace(/\s*station$/i, '')}
+                            </HistoryInfoText>
+                            <MetricsContainer>
+                                <DistanceText>
                                     <HistoryInfoText>
-                                        {station.distanceFromCentral}km  
-                                        <StyledImg src={station.distanceIcon}></StyledImg>
+                                        {formatDistance(station.distanceFromCentral)}
                                     </HistoryInfoText>
-                                    <HistoryInfoText>{station.stationsAway}</HistoryInfoText>
-                                </HintWrapper>
-                            </FlexWrapper>
-                        </StationCollapsed>
-                        <StationExpanded>
-                        {station.lines.map((line, index) => (
-                            <img key={index} src={"/Trainlines/"+line+".svg"} width="30px" alt={line}/>
+                                </DistanceText>
+                                <ArrowIcon 
+                                    src={station.distanceIcon} 
+                                    alt="Distance indicator" 
+                                />
+                                <MetricItem>
+                                    <HistoryInfoText>
+                                    {getStationRanges(station.stationsAway)}
+                                    </HistoryInfoText>
+                                </MetricItem>
+                            </MetricsContainer>
+                        </FlexWrapper>
+                    </StationCollapsed>
+                    <StationExpanded>
+                        {station.lines.map((line, lineIndex) => (
+                            <LineIcon key={lineIndex} src={`/Trainlines/${line}.svg`} alt={line} />
                         ))}
-                        </StationExpanded>
-                    </StationAccordion>
-                );
-            })}
+                    </StationExpanded>
+                </StationAccordion>
+            ))}
         </Container>
     );
 }

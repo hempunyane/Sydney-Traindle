@@ -5,11 +5,12 @@ import { StationText, HeadingText, InfoText } from './TextStyles';
 const Container = styled('div')`
     display: flex;
     flex-direction: row;
-    height: 120px;
+    height: 120px; /* Fixed height */
     width: 100%;
     padding: 5px;
     margin-bottom: 15px;
     border-bottom: 2px solid #777;
+    flex-shrink: 0; /* Prevent shrinking */
 `;
 
 const Column1 = styled('div')`

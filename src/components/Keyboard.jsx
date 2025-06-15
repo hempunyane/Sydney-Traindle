@@ -6,13 +6,13 @@ const KeyboardContainer = styled.div`
   flex-direction: column;
   gap: 15px;
   border-radius: 8px;
-  margin-top: 10px;
+  margin: 10px -20px 0px -20px;
 `;
 
 const KeyboardRow = styled.div`
   display: flex;
   justify-content: center;
-  gap: 2.5%;
+  gap: 2%;
 `;
 
 const Key = styled.button`

@@ -4,6 +4,7 @@ import styled from 'styled-components';
 const KeyboardContainer = styled.div`
   display: flex;
   flex-direction: column;
+  width: 98%;
   gap: 15px;
   border-radius: 8px;
   margin-top: 10px;

@@ -6,7 +6,7 @@ const Container = styled('div')`
     display: flex;
     flex-direction: row;
     height: 120px;
-    width: 100%;
+    width: 90%;
     padding: 5px;
     margin-bottom: 15px;
     border-bottom: 2px solid #777;

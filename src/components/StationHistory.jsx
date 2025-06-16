@@ -9,7 +9,7 @@ const Container = styled('div')`
     display: flex;
     flex-direction: column;
     height: 30%;
-    width: 100%;
+    width: 90%;
 `;
 
 // wrapper for the entire accordion

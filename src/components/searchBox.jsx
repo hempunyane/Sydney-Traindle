@@ -5,13 +5,14 @@ import { Guess, GuessesLeft } from './guesses';
 
 const AutocompleteContainer = styled.div`
     display: flex;
+    align-items: center;
     flex-direction: column;
     width: 100%;
 `;
 
 const Autocomplete = styled.div`
     display: flex;
-    width: 100%;
+    width: 90%;
     height: 15vh;
     border-bottom: 2px solid #777;
     margin-bottom: 15px;

@@ -142,6 +142,9 @@ function Game({ useNewVersion }) {
                         <h3>Nice Try</h3>
                       </div>
                       <p className="win-message">
+                        The correct answer was {answer}
+                      </p>
+                      <p className="win-message">
                         Try again tomorrow!
                       </p>
                       <div className="share-flex">

@@ -109,7 +109,7 @@ function Game() {
         }}>
             <GameContainer $isMobile={isMobile}>
                 <CurrentStation/>
-                <StationHistory/>
+                <StationHistory guesses={guesses}/>
                 <SearchBox 
                     onSubmit={submitGuess}
                     suggestions={stations}

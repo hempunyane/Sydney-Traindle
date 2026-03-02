@@ -108,8 +108,8 @@ function Game() {
             justifyContent: 'center'
         }}>
             <GameContainer $isMobile={isMobile}>
-                <CurrentStation/>
-                <StationHistory guesses={guesses}/>
+                <CurrentStation currentGuess={guesses[0]} answerStation={answerStation}/>
+                <StationHistory guesses={guesses.slice(1)} answerStation={answerStation}/>
                 <SearchBox 
                     onSubmit={submitGuess}
                     suggestions={stations}

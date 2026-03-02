@@ -26,7 +26,7 @@ const Key = styled.button`
   border: none;
   border-radius: 5px;
   background: #f1f1f1;
-  font-size: 25px;
+  font-size: 22px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -116,7 +116,7 @@ const Text = styled.div`
   margin-top: 4px;
 `;
 
-function Keyboard({onKeyPress, disableEnter}) {
+function Keyboard({onKeyPress, disableEnter, isCapitalMode = false}) {
   const topRow = ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'];
   const middleRow = ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'];
   const bottomRow = ['z', 'x', 'c', 'v', 'b', 'n', 'm'];
@@ -137,12 +137,16 @@ function Keyboard({onKeyPress, disableEnter}) {
     <KeyboardContainer>
       <KeyboardRow>
         {topRow.map(key => (
-          <Key key={key} onClick={() => handleKeyClick(key)}>{key}</Key>
+          <Key key={key} onClick={() => handleKeyClick(key)}>
+            {isCapitalMode ? key.toUpperCase() : key}
+          </Key>
         ))}
       </KeyboardRow>
       <KeyboardRow>
         {middleRow.map(key => (
-          <Key key={key} onClick={() => handleKeyClick(key)}>{key}</Key>
+          <Key key={key} onClick={() => handleKeyClick(key)}>
+            {isCapitalMode ? key.toUpperCase() : key}
+          </Key>
         ))}
       </KeyboardRow>
       <KeyboardRow>
@@ -154,7 +158,9 @@ function Keyboard({onKeyPress, disableEnter}) {
         Enter
       </Key>
         {bottomRow.map(key => (
-          <Key key={key} onClick={() => handleKeyClick(key)}>{key}</Key>
+          <Key key={key} onClick={() => handleKeyClick(key)}>
+            {isCapitalMode ? key.toUpperCase() : key}
+          </Key>
         ))}
         <Key className="backspace" onClick={() => handleKeyClick('Backspace')}>
           <img src="/Icons/Delete.svg" alt="Backspace" width={24} />

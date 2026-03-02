@@ -13,7 +13,7 @@ const AutocompleteContainer = styled.div`
 const Autocomplete = styled.div`
     display: flex;
     width: 90%;
-    height: 15vh;
+    height: 10vh;
     border-bottom: 2px solid #777;
     margin-bottom: 15px;
     padding-bottom: 15px;
@@ -74,6 +74,22 @@ const SuggestionPart = styled.span`
     white-space: pre;
 `;
 
+const NextGuessBadge = styled.div`
+    position: absolute;
+    top: 12px;
+    left: 0;
+    min-width: 73px;
+    height: 24px;
+    padding: 0 6px;
+    border-radius: 4px;
+    background-color: #727172;
+    color: #ffffff;
+    font-size: 12pt;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+`;
+
 class SearchBox extends React.PureComponent {
     constructor(props) {
         super(props);
@@ -81,7 +97,8 @@ class SearchBox extends React.PureComponent {
             value: "",
             filteredSuggestions: [],
             activeSuggestionIndex: 0,
-            showSuggestions: false
+            showSuggestions: false,
+            nextCapital: true
         };
     }
 
@@ -128,7 +145,7 @@ class SearchBox extends React.PureComponent {
         const input = this.inputRef;
         if (!input) return;
         
-        const { value } = this.state;
+        const { value, nextCapital } = this.state;
         const start = input.selectionStart;
         const end = input.selectionEnd;
         
@@ -146,6 +163,7 @@ class SearchBox extends React.PureComponent {
         
         let newValue = value;
         let newCursorPos = start;
+        let nextCapitalState = nextCapital;
         
         if (key === 'Backspace') {
             if (start === end && start > 0) {
@@ -156,8 +174,25 @@ class SearchBox extends React.PureComponent {
                 newCursorPos = start;
             }
         } else {
-            newValue = value.slice(0, start) + key + value.slice(end);
-            newCursorPos = start + key.length;
+            // character / space input
+            let charToInsert = key;
+            const isLetter = /^[a-zA-Z]$/.test(key);
+
+            if (isLetter) {
+                charToInsert = nextCapital ? key.toUpperCase() : key.toLowerCase();
+                nextCapitalState = false;
+            } else if (key === ' ') {
+                nextCapitalState = true;
+            }
+
+            newValue = value.slice(0, start) + charToInsert + value.slice(end);
+            newCursorPos = start + charToInsert.length;
+        }
+
+        // Recalculate capitalisation after backspace based on cursor position
+        if (key === 'Backspace') {
+            const prevChar = newValue[newCursorPos - 1];
+            nextCapitalState = !newValue || prevChar === ' ';
         }
         
         const suggestion = this.getFilteredSuggestions(newValue);
@@ -166,7 +201,8 @@ class SearchBox extends React.PureComponent {
         this.setState({
             value: newValue,
             currentSuggestion: suggestion || "",
-            showSuggestion
+            showSuggestion,
+            nextCapital: nextCapitalState
         });
         
         this.updateInputValue(newValue, newCursorPos);
@@ -196,7 +232,7 @@ class SearchBox extends React.PureComponent {
 
 
     render() {
-        const { value, currentSuggestion, showSuggestion } = this.state;
+        const { value, currentSuggestion, showSuggestion, nextCapital } = this.state;
         const suggestionPart = showSuggestion 
             ? currentSuggestion.slice(value.length) 
             : "";
@@ -204,6 +240,7 @@ class SearchBox extends React.PureComponent {
         return (
             <AutocompleteContainer id="input-area">
                 <Autocomplete>
+                    <NextGuessBadge>Next Guess</NextGuessBadge>
                     <InputContainer>
                         <StyledInput
                             ref={(ref) => this.inputRef = ref}
@@ -225,6 +262,7 @@ class SearchBox extends React.PureComponent {
                 <Keyboard 
                     onKeyPress={this.handleKeyPress}
                     disableEnter={!showSuggestion}
+                    isCapitalMode={nextCapital}
                 />
             </AutocompleteContainer>
         );

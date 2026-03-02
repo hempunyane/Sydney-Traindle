@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import trainNetwork from "../helper/TrainNetwork";
 import { HeadingText, HistoryInfoText } from './TextStyles';
 import { BarDisplay } from './trainlineIconDisplays';
 import Accordion from '@mui/material/Accordion';
@@ -9,8 +10,10 @@ import AccordionSummary from '@mui/material/AccordionSummary';
 const Container = styled('div')`
     display: flex;
     flex-direction: column;
-    max-height: 100vh;
+    height: 360px;
     width: 100%;
+    padding: 0 35px;
+    box-sizing: border-box;
     overflow-y: auto;
     scrollbar-width: thin;
     
@@ -27,10 +30,10 @@ const Container = styled('div')`
 // wrapper for the entire accordion
 const StationAccordion = styled(Accordion)`
     width: 100%;
-    margin: 0 !important;
+    margin: 0 0 8px 0 !important;
     box-shadow: none !important;
     border-radius: 0 !important;
-    border-bottom: 1px solid #e0e0e0;
+    border-bottom: none;
     
     &:before {
         display: none;
@@ -43,7 +46,7 @@ const StationAccordion = styled(Accordion)`
 
 // the accordion when collapsed
 const StationCollapsed = styled(AccordionSummary)`
-    padding: 0 8px !important;
+    padding: 0 !important;
     min-height: 48px !important;
     position: relative;
     
@@ -66,25 +69,33 @@ const FlexWrapper = styled('div')`
 `;
 
 const StationExpanded = styled(AccordionDetails)`
-    padding: 8px 16px !important;
+    padding: 4px 0 0 0 !important;
+    margin-top: -4px;
     display: flex;
-    gap: 8px;
+    gap: 6px;
     flex-wrap: wrap;
+`;
+
+const ExpandedLinesContainer = styled('div')`
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 3px;
+    border-radius: 8px;
+    background-color: ${({ background }) => background || 'transparent'};
 `;
 
 const MetricsContainer = styled('div')`
     display: grid;
-    grid-template-columns: auto auto auto;
+    grid-template-columns: minmax(70px, 90px) 24px minmax(70px, 90px);
     align-items: center;
     justify-items: end;
-    gap: 8px;
-    min-width: 200px;
 `;
 
 const MetricItem = styled('div')`
     display: flex;
     justify-content: flex-end;
-    min-width: 70px;
+    font-size: 1.3rem;
 `;
 
 const DistanceText = styled(MetricItem)`
@@ -98,13 +109,46 @@ const DistanceText = styled(MetricItem)`
 const ArrowIcon = styled.img`
     width: 25px;
     height: 25px;
-    margin: 0 4px;
+    margin: 0;
+    margin-left: 32px;
+    justify-self: center;
 `;
 
 const LineIcon = styled.img`
     width: 30px;
     height: 30px;
 `;
+
+const getLinesBackgroundColour = (answerStation, lines) => {
+    if (!answerStation || !lines || !lines.length) {
+        return 'transparent';
+    }
+
+    const answerLines = trainNetwork[answerStation]?.lines || trainNetwork[answerStation]?.["lines"] || [];
+    if (!answerLines.length) return 'transparent';
+
+    const guessSet = new Set(lines);
+    const answerSet = new Set(answerLines);
+
+    let commonCount = 0;
+    guessSet.forEach(line => {
+        if (answerSet.has(line)) {
+            commonCount += 1;
+        }
+    });
+
+    if (commonCount === 0) {
+        return '#FF8888'; // red-ish: no overlap
+    }
+
+    const isExactMatch = commonCount === guessSet.size && commonCount === answerSet.size;
+
+    if (isExactMatch) {
+        return '#9EFB96'; // green-ish: perfect match
+    }
+
+    return '#F4FA9C'; // yellow-ish: partial overlap
+};
 
 const getStationRanges = (stationsAway) => {
     let ranges = [
@@ -124,7 +168,7 @@ function formatDistance(distance) {
     return parseFloat(distance).toFixed(2);
 }
 
-function StationHistory({ guesses }) {
+function StationHistory({ guesses, answerStation }) {
     const [expandedIndex, setExpandedIndex] = useState(null);
 
     const handleChange = (index) => (_event, isExpanded) => {
@@ -133,16 +177,21 @@ function StationHistory({ guesses }) {
 
     return (
         <Container>
-            <HeadingText style={{ 
-                paddingBottom: '10px', 
-                position: 'sticky', 
-                top: 0, 
-                background: 'white', 
-                zIndex: 1 
-            }}>
+            <HeadingText
+                style={{ 
+                    paddingBottom: '8px', 
+                    position: 'sticky', 
+                    top: '-2px', 
+                    background: 'white', 
+                    zIndex: 10,
+                    marginLeft: '-8px'
+                }}
+            >
                 History
             </HeadingText>
-            {guesses.map((station, index) => (
+            {guesses.map((station, index) => {
+                const linesBackground = getLinesBackgroundColour(answerStation, station.lines);
+                return (
                 <StationAccordion 
                     key={index} 
                     TransitionProps={{ unmountOnExit: true }}
@@ -159,7 +208,7 @@ function StationHistory({ guesses }) {
                             </HistoryInfoText>
                             <MetricsContainer>
                                 <DistanceText>
-                                    <HistoryInfoText>
+                                    <HistoryInfoText style={{ width: '100%', textAlign: 'right' }}>
                                         {formatDistance(station.distanceFromCentral)}
                                     </HistoryInfoText>
                                 </DistanceText>
@@ -168,7 +217,7 @@ function StationHistory({ guesses }) {
                                     alt="Distance indicator" 
                                 />
                                 <MetricItem>
-                                    <HistoryInfoText>
+                                    <HistoryInfoText style={{ width: '100%', textAlign: 'right' }}>
                                         {getStationRanges(station.stationsAway)}
                                     </HistoryInfoText>
                                 </MetricItem>
@@ -179,12 +228,14 @@ function StationHistory({ guesses }) {
                         )}
                     </StationCollapsed>
                     <StationExpanded>
-                        {station.lines.map((line, lineIndex) => (
-                            <LineIcon key={lineIndex} src={`/Trainlines/${line}.svg`} alt={line} />
-                        ))}
+                        <ExpandedLinesContainer background={linesBackground}>
+                            {station.lines.map((line, lineIndex) => (
+                                <LineIcon key={lineIndex} src={`/Trainlines/${line}.svg`} alt={line} />
+                            ))}
+                        </ExpandedLinesContainer>
                     </StationExpanded>
                 </StationAccordion>
-            ))}
+            )})}
         </Container>
     );
 }

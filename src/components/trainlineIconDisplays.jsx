@@ -304,8 +304,8 @@ export class BarDisplay extends React.Component {
             return
         }
         const BarColour = styled.div`
-                width: 11.11111111111111%;
-                height: 100%;
+                width: 35px;
+                height: 4px;
                 background-color: ${({ colour }) => colour};
         `
         const colours = {
@@ -334,9 +334,8 @@ export class BarDisplay extends React.Component {
                 display: flex;
                 position: absolute;
                 align-items: center;
-                height: 6px;
-                width: 100%;
-                bottom: 0;
+                height: 4px;
+                bottom: 4px;
             `;
 
             return <BarContainer>

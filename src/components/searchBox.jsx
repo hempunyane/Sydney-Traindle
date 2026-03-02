@@ -202,7 +202,7 @@ class SearchBox extends React.PureComponent {
             : "";
             
         return (
-            <AutocompleteContainer>
+            <AutocompleteContainer id="input-area">
                 <Autocomplete>
                     <InputContainer>
                         <StyledInput

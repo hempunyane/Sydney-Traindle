@@ -4,6 +4,9 @@ import styled from 'styled-components';
 import SearchBox from './searchBox';
 import trainNetwork from "../helper/TrainNetwork";
 import { Guess, GuessesLeft } from './guesses';
+import TutorialHighlighter from './TutorialHighlighter';
+import CurrentStation from './CurrentStation';
+import StationHistory from './StationHistory';
 
 const MAX_GUESSES = 7;
 
@@ -11,8 +14,6 @@ const MAX_GUESSES = 7;
 // import Timer from './timer';
 //import MobileContext from './mobileContext';
 
-import CurrentStation from './CurrentStation';
-import StationHistory from './StationHistory';
 
 // TODO: figure out how mobile top inset works
 const GameContainer = styled.div.attrs(() => ({}))`
@@ -113,7 +114,8 @@ function Game() {
                     onSubmit={submitGuess}
                     suggestions={stations}
                     guessesLeft={MAX_GUESSES - guesses.length}
-                />
+                    />
+                {/* <TutorialHighlighter/> */}
             </GameContainer>
 
         </div>

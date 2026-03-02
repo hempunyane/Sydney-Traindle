@@ -40,7 +40,7 @@ const Column3 = styled('div')`
 
 function CurrentStation() {
     return (
-        <Container>
+        <Container id="current-guess">
             {/* column 1 */}
             <Column1>
                 <HeadingText>Station</HeadingText>
@@ -49,12 +49,12 @@ function CurrentStation() {
                     Macquarie University
                 </StationText>
             </Column1>
-            <Column2>
+            <Column2 id="current-guess-dist">
                 <HeadingText>Dist. from Central</HeadingText>
                 {/* get from data */}
                 <InfoText>8.38km</InfoText>
             </Column2>
-            <Column3>
+            <Column3 id="current-guess-stops">
                 <HeadingText>Stops</HeadingText>
                 {/* get from data */}
                 <InfoText>10-20km</InfoText>

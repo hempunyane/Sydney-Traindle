@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import { HeadingText, HistoryInfoText } from './TextStyles';
-
+import { BarDisplay } from './trainlineIconDisplays';
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
@@ -55,10 +55,9 @@ const StationExpanded = styled(AccordionDetails)`
 function StationHistory() {
 
     return (
-        <Container>
+        <Container id="history-area">
             <HeadingText style={{ paddingBottom: '10px' }}>History</HeadingText>
-            <StationAccordion
-            >
+            <StationAccordion>
                 <StationCollapsed>
                     <FlexWrapper>
                         {/* guess from user input */}
@@ -78,6 +77,8 @@ function StationHistory() {
                             </HistoryInfoText>
                         </HintWrapper>
                     </FlexWrapper>
+                    {/* simple trainline display */}
+                    <BarDisplay trainlines={["T1", "T2", "T5"]}></BarDisplay> {/*pass real data*/}
                 </StationCollapsed>
 
                 <StationExpanded>

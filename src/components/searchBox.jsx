@@ -263,6 +263,7 @@ class SearchBox extends React.PureComponent {
                     onKeyPress={this.handleKeyPress}
                     disableEnter={!showSuggestion}
                     isCapitalMode={nextCapital}
+                    onHelp={this.props.onHelp}
                 />
             </AutocompleteContainer>
         );

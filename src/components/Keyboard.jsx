@@ -112,11 +112,16 @@ const FooterIcon = styled.img`
   height: 25px;
 `;
 
-const Text = styled.div`
+const Text1 = styled.div`
+  font-size: 12px;
   margin-top: 4px;
 `;
 
-function Keyboard({onKeyPress, disableEnter, isCapitalMode = false}) {
+const Text2 = styled.div`
+  font-size: 12px;
+`;
+
+function Keyboard({onKeyPress, disableEnter, isCapitalMode = false, onHelp}) {
   const topRow = ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'];
   const middleRow = ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'];
   const bottomRow = ['z', 'x', 'c', 'v', 'b', 'n', 'm'];
@@ -129,9 +134,11 @@ function Keyboard({onKeyPress, disableEnter, isCapitalMode = false}) {
     console.log("Map Clicked")
   }
 
-  const handleLegendClick = () => {
-    console.log("Legend Clicked")
-  }
+  const handleHelpClick = () => {
+    if (onHelp) {
+      onHelp();
+    }
+  };
 
   return (
     <KeyboardContainer>
@@ -169,10 +176,10 @@ function Keyboard({onKeyPress, disableEnter, isCapitalMode = false}) {
 
       <BottomButtonRow>
         <FooterButtonContainer>
-          <FooterIconWrapper onClick={handleLegendClick}>
-            <img src="./Icons/Legend.svg" alt="Legend" width="35" height="35"/>
-          </FooterIconWrapper>
-          <div>Legend</div>
+          <FooterButton className="cursor-hover" onClick={handleMapClick}>
+            <FooterIcon src="./Icons/pin.svg" alt="Map" />
+          </FooterButton>
+          <Text1>Map</Text1>
         </FooterButtonContainer>
 
         <Key className="spacebar" onClick={() => handleKeyClick(' ')}>
@@ -180,10 +187,10 @@ function Keyboard({onKeyPress, disableEnter, isCapitalMode = false}) {
         </Key>
 
         <FooterButtonContainer>
-          <FooterButton className="cursor-hover" onClick={handleMapClick}>
-            <FooterIcon src="./Icons/pin.svg" alt="Map" />
-          </FooterButton>
-          <Text>Map</Text>
+          <FooterIconWrapper onClick={handleHelpClick}>
+            <img src="./Icons/Legend.svg" alt="Help" width="35" height="35"/>
+          </FooterIconWrapper>
+          <Text2>Help</Text2>
         </FooterButtonContainer>
       </BottomButtonRow>
 

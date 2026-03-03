@@ -63,6 +63,7 @@ function Game() {
     const [answerStation, setAnswerStation] = useState(null);
     const [guesses, setGuesses] = useState([]);
     const [hasWon, setHasWon] = useState(false);
+    const [showTutorial, setShowTutorial] = useState(true);
   
     useEffect(() => {
         const storedDate = localStorage.getItem('gameDate');
@@ -141,8 +142,11 @@ function Game() {
                     onSubmit={submitGuess}
                     suggestions={stations}
                     guessesLeft={MAX_GUESSES - guesses.length}
+                    onHelp={() => setShowTutorial(true)}
                     />
-                {/* <TutorialHighlighter/> */}
+                {showTutorial && (
+                    <TutorialHighlighter onFinish={() => setShowTutorial(false)} />
+                )}
             </GameContainer>
 
         </div>

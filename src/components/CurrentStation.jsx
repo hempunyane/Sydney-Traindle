@@ -51,6 +51,19 @@ const CurrentLineIcon = styled.img`
     height: 39px;
 `;
 
+const QuestionMarkIcon = styled.div`
+    width: 39px;
+    height: 39px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #FFFFFF;
+    border-radius: 5px;
+    font-size: 28px;
+    font-weight: bold;
+    color: #333;
+`;
+
 const LinesContainer = styled('div')`
     display: inline-flex;
     align-items: center;
@@ -118,11 +131,11 @@ const getLinesBackgroundColour = (answerStation, lines) => {
 function CurrentStation({ currentGuess, answerStation }) {
     const hasGuess = Boolean(currentGuess);
 
-    const stationName = hasGuess ? currentGuess.stationName.replace(/\s*station$/i, '') : 'Station';
-    const distance = hasGuess ? `${formatDistance(currentGuess.distanceFromCentral)}km` : '--';
-    const stops = hasGuess ? getStationRanges(currentGuess.stationsAway) : '--';
+    const stationName = hasGuess ? currentGuess.stationName.replace(/\s*station$/i, '') : 'Type to Guess!';
+    const distance = hasGuess ? `${formatDistance(currentGuess.distanceFromCentral)}km` : '-.--km';
+    const stops = hasGuess ? getStationRanges(currentGuess.stationsAway) : '--/--';
     const lines = hasGuess ? currentGuess.lines : [];
-    const linesBackground = hasGuess ? getLinesBackgroundColour(answerStation, lines) : 'transparent';
+    const linesBackground = hasGuess ? getLinesBackgroundColour(answerStation, lines) : '#FF8888';
 
     return (
         <Container id="current-guess">
@@ -139,7 +152,10 @@ function CurrentStation({ currentGuess, answerStation }) {
                             <CurrentArrowIcon src={currentGuess.distanceIcon} alt="Distance indicator" />
                         </DistanceRow>
                     ) : (
-                        <InfoText>{distance}</InfoText>
+                        <DistanceRow>
+                            <InfoText>{distance}</InfoText>
+                            <CurrentArrowIcon src="/Icons/arrow_up.svg" alt="Distance indicator" />
+                        </DistanceRow>
                     )}
                 </Column2>
                 <Column3 id="current-guess-stops">
@@ -147,19 +163,21 @@ function CurrentStation({ currentGuess, answerStation }) {
                     <InfoText>{stops}</InfoText>
                 </Column3>
             </ColumnsRow>
-            {hasGuess && (
-                <LinesRow>
-                    <LinesContainer background={linesBackground}>
-                        {lines.map((line) => (
+            <LinesRow>
+                <LinesContainer id="current-guess-trainlines" background={linesBackground}>
+                    {hasGuess ? (
+                        lines.map((line) => (
                             <CurrentLineIcon
                                 key={line}
                                 src={`/Trainlines/${line}.svg`}
                                 alt={line}
                             />
-                        ))}
-                    </LinesContainer>
-                </LinesRow>
-            )}
+                        ))
+                    ) : (
+                        <QuestionMarkIcon>?</QuestionMarkIcon>
+                    )}
+                </LinesContainer>
+            </LinesRow>
         </Container>
     );
 }

@@ -127,7 +127,7 @@ const CurrentGuessTrainlinesTutorial = () => {
 }
 
 const HistoryAreaTutorial = () => {
-    return <TutorialBox width="300" height="125" offset={150}>
+    return <TutorialBox width="300" height="125" offset={200}>
         <p><span className="bold">History</span></p>
         <p>All of your previous guesses are stored here.</p>
     </TutorialBox>
@@ -242,10 +242,27 @@ function formatClipByID(id){
   ]
 }
 
-const TutorialHighlighter = ({ currentIndex = 0 }) => {
+const TutorialHighlighter = ({ currentIndex = 0, onFinish, show }) => {
     const [tutorialIndex, setTutorialIndex] = useState(0);
+    const [clips, setClips] = useState([]);
     //force an expansion on first history item when index changes from 5-6
-
+    useEffect(() => {
+        // Small delay to ensure DOM is ready
+        const timer = setTimeout(() => {
+            const newClips = [
+                document.getElementById("input-area") ? formatClipByID("input-area") : null,
+                document.getElementById("current-guess") ? formatClipByID("current-guess") : null,
+                document.getElementById("current-guess-dist") ? formatClipByID("current-guess-dist") : null,
+                document.getElementById("current-guess-stops") ? formatClipByID("current-guess-stops") : null,
+                document.getElementById("current-guess-trainlines") ? formatClipByID("current-guess-trainlines") : null,
+                document.getElementById("history-area") ? formatClipByID("history-area") : null,
+                document.getElementById("history-expansion") ? formatClipByID("history-expansion") : null,
+            ];
+            setClips(newClips);
+        }, 100); // Small delay to ensure DOM is fully rendered
+        
+        return () => clearTimeout(timer);
+    }, [tutorialIndex, show]);
 
     /*
     tutorial steps:
@@ -266,9 +283,9 @@ const TutorialHighlighter = ({ currentIndex = 0 }) => {
         formatClipByID("current-guess"),
         formatClipByID("current-guess-dist"),
         formatClipByID("current-guess-stops"),
-        //formatClipByID("current-guess-trainlines"),
+        formatClipByID("current-guess-trainlines"),
         formatClipByID("history-area"),
-        //formatClipByID("history-expansion")
+        formatClipByID("history-expansion")
     ]
 
     const tutorialPopups = [
@@ -276,10 +293,14 @@ const TutorialHighlighter = ({ currentIndex = 0 }) => {
         <CurrentGuessTutorial/>,
         <CurrentGuessDistTutorial/>,
         <CurrentGuessStopsTutorial/>,
-        //<CurrentGuessTrainlinesTutorial/>,
+        <CurrentGuessTrainlinesTutorial/>,
         <HistoryAreaTutorial/>,
-        //<HistoryExpansionTutorial/>
+        <HistoryExpansionTutorial/>
     ]
+
+    if (!clips[tutorialIndex]) {
+        return null;
+    }
 
     const variants = {
         initial: {
@@ -332,8 +353,19 @@ const TutorialHighlighter = ({ currentIndex = 0 }) => {
             </AnimatePresence>
             
             <BlackoutSVG
-                clip={targetedIds[tutorialIndex]}
-                onClick={() => setTutorialIndex(i => (i + 1) % targetedIds.length)}
+                clip={clips[tutorialIndex]}
+                onClick={() => {
+                    setTutorialIndex(i => {
+                        const next = i + 1;
+                        if (next >= tutorialPopups.length) {
+                            if (onFinish) {
+                                onFinish();
+                            }
+                            return i;
+                        }
+                        return next;
+                    });
+                }}
             />
         </FadeInOut>
     )

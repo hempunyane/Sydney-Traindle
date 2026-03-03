@@ -79,6 +79,7 @@ const StationExpanded = styled(AccordionDetails)`
     display: flex;
     gap: 6px;
     flex-wrap: wrap;
+    cursor: pointer;
 `;
 
 const ExpandedLinesContainer = styled('div')`
@@ -124,6 +125,14 @@ const LineIcon = styled.img`
     height: 30px;
 `;
 
+const PlaceholderBar = styled.div`
+    width: 35px;
+    height: 4px;
+    background-color: #CCCCCC;
+    position: absolute;
+    bottom: 4px;
+`;
+
 const getLinesBackgroundColour = (answerStation, lines) => {
     if (!answerStation || !lines || !lines.length) {
         return 'transparent';
@@ -156,6 +165,7 @@ const getLinesBackgroundColour = (answerStation, lines) => {
 };
 
 const getStationRanges = (stationsAway) => {
+    if (stationsAway === 0) return '0';
     let ranges = [
       "10-20",
       "20-30",
@@ -180,15 +190,31 @@ function StationHistory({ guesses, answerStation }) {
         setExpandedIndex(isExpanded ? index : null);
     };
 
+    const handleExpandedClick = (index) => () => {
+        if (expandedIndex === index) {
+            setExpandedIndex(null);
+        }
+    };
+
+    // Create a placeholder guess if there are no guesses
+    const displayGuesses = guesses.length > 0 ? guesses : [{
+        stationName: 'No Lines!',
+        distanceFromCentral: 0,
+        stationsAway: 0,
+        lines: [],
+        distanceIcon: '/Icons/arrow_up.svg',
+        isPlaceholder: true
+    }];
+
     return (
-        <Container>
+        <Container id='history-area'>
             <HeadingText
                 style={{ 
                     paddingBottom: '4px', 
                     position: 'sticky', 
                     top: '-2px', 
                     background: 'white', 
-                    zIndex: 10,
+                    zIndex: 1,
                     marginLeft: '-8px',
                     marginBottom: '-4px',
                     fontSize: '12px'
@@ -196,14 +222,17 @@ function StationHistory({ guesses, answerStation }) {
             >
                 History
             </HeadingText>
-            {guesses.map((station, index) => {
-                const linesBackground = getLinesBackgroundColour(answerStation, station.lines);
+            {displayGuesses.map((station, index) => {
+                const linesBackground = station.isPlaceholder ? '#CCCCCC' : getLinesBackgroundColour(answerStation, station.lines);
+                const isPlaceholder = station.isPlaceholder;
+                
                 return (
                 <StationAccordion 
-                    key={index} 
+                    key={index}
+                    id={index === 0 ? 'history-expansion' : undefined}
                     TransitionProps={{ unmountOnExit: true }}
-                    expanded={expandedIndex === index}
-                    onChange={handleChange(index)}
+                    expanded={!isPlaceholder && expandedIndex === index}
+                    onChange={isPlaceholder ? undefined : handleChange(index)}
                 >
                     <StationCollapsed
                         aria-controls={`panel${index}-content`}
@@ -216,7 +245,7 @@ function StationHistory({ guesses, answerStation }) {
                             <MetricsContainer>
                                 <DistanceText>
                                     <HistoryInfoText style={{ width: '100%', textAlign: 'right' }}>
-                                        {formatDistance(station.distanceFromCentral)}
+                                        {isPlaceholder ? '-.--' : formatDistance(station.distanceFromCentral)}
                                     </HistoryInfoText>
                                 </DistanceText>
                                 <ArrowIcon 
@@ -225,22 +254,25 @@ function StationHistory({ guesses, answerStation }) {
                                 />
                                 <MetricItem>
                                     <HistoryInfoText style={{ width: '100%', textAlign: 'right' }}>
-                                        {getStationRanges(station.stationsAway)}
+                                        {isPlaceholder ? '--/--' : getStationRanges(station.stationsAway)}
                                     </HistoryInfoText>
                                 </MetricItem>
                             </MetricsContainer>
                         </FlexWrapper>
-                        {expandedIndex !== index && (
+                        {(!isPlaceholder && expandedIndex !== index) && (
                             <BarDisplay trainlines={station.lines} />
                         )}
+                        {isPlaceholder && <PlaceholderBar />}
                     </StationCollapsed>
-                    <StationExpanded>
-                        <ExpandedLinesContainer background={linesBackground}>
-                            {station.lines.map((line, lineIndex) => (
-                                <LineIcon key={lineIndex} src={`/Trainlines/${line}.svg`} alt={line} />
-                            ))}
-                        </ExpandedLinesContainer>
-                    </StationExpanded>
+                    {!isPlaceholder && (
+                        <StationExpanded onClick={handleExpandedClick(index)}>
+                            <ExpandedLinesContainer background={linesBackground}>
+                                {station.lines.map((line, lineIndex) => (
+                                    <LineIcon key={lineIndex} src={`/Trainlines/${line}.svg`} alt={line} />
+                                ))}
+                            </ExpandedLinesContainer>
+                        </StationExpanded>
+                    )}
                 </StationAccordion>
             )})}
         </Container>

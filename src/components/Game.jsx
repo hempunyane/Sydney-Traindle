@@ -23,9 +23,30 @@ const GameContainer = styled.div.attrs(() => ({}))`
   height: 100vh;
   width: ${props => (props.$isMobile ? '100%' : '600px')};
   box-sizing: border-box;
-  padding-top: 70px;
+  padding-top: 85px;
   position: fixed;
-  background: linear-gradient(to bottom, #F6891F 50px, white 50px);
+  background: linear-gradient(to bottom, #F6891F 66px, white 66px);
+`;
+
+const TopSection = styled.div`
+  width: 90%;
+  margin-bottom: 8px;
+`;
+
+const SydneyTag = styled.div`
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 2px;
+  background-color: #e0e0e0;
+  color: #000000;
+  font-size: 10px;
+  margin-bottom: 4px;
+`;
+
+const SydneyTagIcon = styled.img`
+  width: 14px;
+  height: 14px;
 `;
 
 // https://stackoverflow.com/questions/521295/seeding-the-random-number-generator-in-javascript
@@ -108,7 +129,13 @@ function Game() {
             justifyContent: 'center'
         }}>
             <GameContainer $isMobile={isMobile}>
-                <CurrentStation currentGuess={guesses[0]} answerStation={answerStation}/>
+                <TopSection>
+                    <SydneyTag>
+                        <SydneyTagIcon src="/Logos/TfNSW_T.svg" alt="Sydney Trains" />
+                        Sydney Traindle
+                    </SydneyTag>
+                    <CurrentStation currentGuess={guesses[0]} answerStation={answerStation}/>
+                </TopSection>
                 <StationHistory guesses={guesses.slice(1)} answerStation={answerStation}/>
                 <SearchBox 
                     onSubmit={submitGuess}

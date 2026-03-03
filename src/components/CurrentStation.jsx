@@ -4,12 +4,16 @@ import { StationText, HeadingText, InfoText } from './TextStyles';
 
 const Container = styled('div')`
     display: flex;
-    flex-direction: row;
-    height: 120px;
-    width: 90%;
-    padding: 5px;
-    margin-bottom: 15px;
-    border-bottom: 2px solid #777;
+    flex-direction: column;
+    width: 100%;
+    padding-top: 10px;
+    margin-bottom: 5px;
+    border-bottom: 1px solid #777;
+`;
+
+const ColumnsRow = styled('div')`
+    display: flex;
+    width: 100%;
 `;
 
 const Column1 = styled('div')`
@@ -17,7 +21,6 @@ const Column1 = styled('div')`
     display: flex;
     justify-content: space-between;
     flex-grow: 5;
-    height: 50px;
 `;
 
 const Column2 = styled('div')`
@@ -26,7 +29,6 @@ const Column2 = styled('div')`
     justify-content: space-between;
     align-items: center;
     flex-grow: 3;
-    height: 50px;
 `;
 
 const Column3 = styled('div')`
@@ -35,14 +37,13 @@ const Column3 = styled('div')`
     justify-content: space-between;
     align-items: flex-end;
     flex-grow: 2;
-    height: 50px;
 `;
 
 const LinesRow = styled('div')`
     display: flex;
-    gap: 8px;
-    margin-top: 10px;
-    align-items: flex-end;
+    justify-content: flex-start;
+    margin-top: 8px;
+    margin-bottom: 8px;
 `;
 
 const CurrentLineIcon = styled.img`
@@ -67,8 +68,8 @@ const DistanceRow = styled('div')`
 `;
 
 const CurrentArrowIcon = styled.img`
-    width: 18px;
-    height: 18px;
+    width: 25px;
+    height: 25px;
 `;
 
 const getStationRanges = (stationsAway) => {
@@ -125,40 +126,40 @@ function CurrentStation({ currentGuess, answerStation }) {
 
     return (
         <Container id="current-guess">
-            <Column1>
-                <HeadingText>Station</HeadingText>
-                <div>
+            <ColumnsRow>
+                <Column1>
+                    <HeadingText>Station</HeadingText>
                     <StationText>{stationName}</StationText>
-                    {hasGuess && (
-                        <LinesRow>
-                            <LinesContainer background={linesBackground}>
-                                {lines.map((line) => (
-                                    <CurrentLineIcon
-                                        key={line}
-                                        src={`/Trainlines/${line}.svg`}
-                                        alt={line}
-                                    />
-                                ))}
-                            </LinesContainer>
-                        </LinesRow>
-                    )}
-                </div>
-            </Column1>
-            <Column2 id="current-guess-dist">
-                <HeadingText>Dist. from Central</HeadingText>
-                {hasGuess ? (
-                    <DistanceRow>
+                </Column1>
+                <Column2 id="current-guess-dist">
+                    <HeadingText>Dist. from Central</HeadingText>
+                    {hasGuess ? (
+                        <DistanceRow>
+                            <InfoText>{distance}</InfoText>
+                            <CurrentArrowIcon src={currentGuess.distanceIcon} alt="Distance indicator" />
+                        </DistanceRow>
+                    ) : (
                         <InfoText>{distance}</InfoText>
-                        <CurrentArrowIcon src={currentGuess.distanceIcon} alt="Distance indicator" />
-                    </DistanceRow>
-                ) : (
-                    <InfoText>{distance}</InfoText>
-                )}
-            </Column2>
-            <Column3 id="current-guess-stops">
-                <HeadingText>Stops</HeadingText>
-                <InfoText>{stops}</InfoText>
-            </Column3>
+                    )}
+                </Column2>
+                <Column3 id="current-guess-stops">
+                    <HeadingText>Stops</HeadingText>
+                    <InfoText>{stops}</InfoText>
+                </Column3>
+            </ColumnsRow>
+            {hasGuess && (
+                <LinesRow>
+                    <LinesContainer background={linesBackground}>
+                        {lines.map((line) => (
+                            <CurrentLineIcon
+                                key={line}
+                                src={`/Trainlines/${line}.svg`}
+                                alt={line}
+                            />
+                        ))}
+                    </LinesContainer>
+                </LinesRow>
+            )}
         </Container>
     );
 }

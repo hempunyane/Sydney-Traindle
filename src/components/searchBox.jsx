@@ -8,13 +8,14 @@ const AutocompleteContainer = styled.div`
     align-items: center;
     flex-direction: column;
     width: 100%;
+    margin-bottom: 10px;
 `;
 
 const Autocomplete = styled.div`
     display: flex;
     width: 90%;
-    height: 10vh;
-    border-bottom: 2px solid #777;
+    height: 9vh;
+    border-bottom: 1px solid #777;
     margin-bottom: 15px;
     padding-bottom: 15px;
     position: relative;
@@ -33,7 +34,7 @@ const StyledInput = styled.input.attrs({
     margin: auto 0px 5px 0px;
     width: 100%;
     border: none;
-    font-size: 20pt;
+    font-size: 24px;
     color: #000;
     outline: none;
     caret-color: black;
@@ -55,7 +56,7 @@ const AutocompleteSuggestion = styled.div`
     left: 0;
     bottom: 0px;
     margin: auto 0px 6px 2px;
-    font-size: 20pt;
+    font-size: 24px;
     color: #777;
     pointer-events: none;
     z-index: 1;
@@ -78,13 +79,12 @@ const NextGuessBadge = styled.div`
     position: absolute;
     top: 12px;
     left: 0;
-    min-width: 73px;
-    height: 24px;
-    padding: 0 6px;
+    min-width: 74px;
+    height: 19px;
     border-radius: 4px;
     background-color: #727172;
     color: #ffffff;
-    font-size: 12pt;
+    font-size: 12px;
     display: flex;
     align-items: center;
     justify-content: center;

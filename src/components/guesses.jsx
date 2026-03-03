@@ -68,7 +68,6 @@ export class GuessesLeft extends React.Component {
     render() {
         const GuessesLeftContainer = styled.div`
             margin: 0px;
-            margin-top: auto;
             display: flex;
             flex-direction: column;
             align-items: flex-end;
@@ -76,13 +75,13 @@ export class GuessesLeft extends React.Component {
             flex: 1;
 
             h3 {
-                font-size: 11pt;
+                font-size: 12px;
                 font-weight: 100;
             }
 
             h2 {
                 margin: 0px;
-                font-size: 36pt;
+                font-size: 40px;
                 font-family: 'Inter';
                 font-weight: 400;
                 color: #f6891f;

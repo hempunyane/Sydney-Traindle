@@ -10,7 +10,7 @@ import AccordionSummary from '@mui/material/AccordionSummary';
 const Container = styled('div')`
     display: flex;
     flex-direction: column;
-    height: 360px;
+    height: 100vh;
     width: 100%;
     padding: 0 35px;
     box-sizing: border-box;
@@ -46,17 +46,22 @@ const StationAccordion = styled(Accordion)`
 
 // the accordion when collapsed
 const StationCollapsed = styled(AccordionSummary)`
-    padding: 0 !important;
-    min-height: 48px !important;
+    padding: 0 0 6px 0 !important;
+    min-height: 44px !important;
     position: relative;
     
     &.Mui-expanded {
-        min-height: 48px !important;
+        min-height: 20px !important;
+        padding-bottom: 0 !important;
     }
     
     .MuiAccordionSummary-content {
         margin: 8px 0 !important;
         align-items: center;
+    }
+    
+    &.Mui-expanded .MuiAccordionSummary-content {
+        margin: 4px 0 !important;
     }
 `;
 
@@ -69,8 +74,8 @@ const FlexWrapper = styled('div')`
 `;
 
 const StationExpanded = styled(AccordionDetails)`
-    padding: 4px 0 0 0 !important;
     margin-top: -4px;
+    padding: 4px 0 0 0 !important;
     display: flex;
     gap: 6px;
     flex-wrap: wrap;
@@ -87,7 +92,7 @@ const ExpandedLinesContainer = styled('div')`
 
 const MetricsContainer = styled('div')`
     display: grid;
-    grid-template-columns: minmax(70px, 90px) 24px minmax(70px, 90px);
+    grid-template-columns: 60px 10px 60px;
     align-items: center;
     justify-items: end;
 `;
@@ -95,7 +100,7 @@ const MetricsContainer = styled('div')`
 const MetricItem = styled('div')`
     display: flex;
     justify-content: flex-end;
-    font-size: 1.3rem;
+    font-size: 15px;
 `;
 
 const DistanceText = styled(MetricItem)`
@@ -107,10 +112,10 @@ const DistanceText = styled(MetricItem)`
 `;
 
 const ArrowIcon = styled.img`
-    width: 25px;
-    height: 25px;
+    width: 18px;
+    height: 18px;
     margin: 0;
-    margin-left: 32px;
+    margin-left: 24px;
     justify-self: center;
 `;
 
@@ -179,12 +184,14 @@ function StationHistory({ guesses, answerStation }) {
         <Container>
             <HeadingText
                 style={{ 
-                    paddingBottom: '8px', 
+                    paddingBottom: '4px', 
                     position: 'sticky', 
                     top: '-2px', 
                     background: 'white', 
                     zIndex: 10,
-                    marginLeft: '-8px'
+                    marginLeft: '-8px',
+                    marginBottom: '-4px',
+                    fontSize: '12px'
                 }}
             >
                 History

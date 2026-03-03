@@ -7,6 +7,7 @@ import { Guess, GuessesLeft } from './guesses';
 import TutorialHighlighter from './TutorialHighlighter';
 import CurrentStation from './CurrentStation';
 import StationHistory from './StationHistory';
+import WinScreen from './WinScreen';
 
 const MAX_GUESSES = 7;
 
@@ -63,6 +64,7 @@ function Game() {
     const [answerStation, setAnswerStation] = useState(null);
     const [guesses, setGuesses] = useState([]);
     const [hasWon, setHasWon] = useState(false);
+    const [showWinScreen, setShowWinScreen] = useState(false);
     const [showTutorial, setShowTutorial] = useState(true);
   
     useEffect(() => {
@@ -96,7 +98,19 @@ function Game() {
         }
     }, []);
 
-    const addGuess = useCallback((stationGuess) => {   
+    useEffect(() => {
+        if (hasWon && guesses.length > 0 && guesses[0].stationName === answerStation) {
+            setShowWinScreen(true);
+        }
+    }, [hasWon, guesses, answerStation]);
+
+    const handleSeeGuesses = () => {
+        setShowWinScreen(false);
+    };
+
+    const addGuess = useCallback((stationGuess) => { 
+        if (hasWon) return;
+
         const newGuesses = [
             new Guess(stationGuess, answerStation),
             ...guesses,
@@ -108,7 +122,6 @@ function Game() {
         if (stationGuess === answerStation) {
             setHasWon(true);
             localStorage.setItem('won', true);
-            setShowSearchbar(false);
         }
     }, [guesses, answerStation]);
 
@@ -146,6 +159,12 @@ function Game() {
                     />
                 {showTutorial && (
                     <TutorialHighlighter onFinish={() => setShowTutorial(false)} />
+                )}
+                {showWinScreen && (
+                    <WinScreen
+                        stationName={answerStation}
+                        onSeeGuesses={handleSeeGuesses}
+                    />
                 )}
             </GameContainer>
 

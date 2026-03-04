@@ -7,7 +7,7 @@ import { Guess, GuessesLeft } from './guesses';
 import TutorialHighlighter from './TutorialHighlighter';
 import CurrentStation from './CurrentStation';
 import StationHistory from './StationHistory';
-import WinScreen from './WinScreen';
+import EndScreen from './EndScreen';
 
 const MAX_GUESSES = 7;
 
@@ -56,60 +56,124 @@ const seededRandom = (seed) => {
     return x - Math.floor(x);
 };
 
+const getTodayDateString = () => {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  };
+  
+  // Load stats from localStorage
+  const loadStats = () => {
+    const defaultStats = {
+      gamesPlayed: 0,
+      gamesWon: 0,
+      currentStreak: 0,
+      lastGameDate: '',
+      lastGameResult: null
+    };
+    const stored = localStorage.getItem('gameStats');
+    return stored ? JSON.parse(stored) : defaultStats;
+  };
+  
+  // Save stats
+  const saveStats = (stats) => {
+    localStorage.setItem('gameStats', JSON.stringify(stats));
+  };
+
 function Game() {
     const theme = useTheme();
-    const isMobile = useMediaQuery(theme.breakpoints.down('sm')); // <600px
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const stations = Object.keys(trainNetwork);
 
     const [answerStation, setAnswerStation] = useState(null);
     const [guesses, setGuesses] = useState([]);
     const [hasWon, setHasWon] = useState(false);
-    const [showWinScreen, setShowWinScreen] = useState(false);
+    const [hasLost, setHasLost] = useState(false);
+    const [showEndScreen, setShowEndScreen] = useState(false);
     const [showTutorial, setShowTutorial] = useState(true);
+    const [stats, setStats] = useState(loadStats);
   
     useEffect(() => {
         const storedDate = localStorage.getItem('gameDate');
         const storedGuesses = JSON.parse(localStorage.getItem('selectedStations')) || [];
         const storedHasWon = JSON.parse(localStorage.getItem('won')) || false;
+        const storedHasLost = JSON.parse(localStorage.getItem('lost')) || false;
 
         /* mock date for testing */
-        const mockDate = new Date('2025-02-05');
+        const mockDate = new Date('2025-02-02');
         const today = mockDate.toISOString().split('T')[0];
-    
-        // const today = new Date().toISOString().split('T')[0];
-        // const day = Math.floor((new Date() - new Date(2000, 0, 1)) / 86400000);
     
         if (storedDate === today) {
             setAnswerStation(localStorage.getItem('answer'));
             setGuesses(storedGuesses);
             setHasWon(storedHasWon);
+            setHasLost(storedHasLost);
         } else {
             const newAnswer = stations[Math.floor(Math.random() * stations.length)];
-            //const newAnswer = stations[Math.floor(seededRandom(day) * stations.length)];
             setAnswerStation(newAnswer);
     
             localStorage.setItem('gameDate', today);
             localStorage.setItem('answer', newAnswer);
             localStorage.setItem('selectedStations', JSON.stringify([]));
             localStorage.setItem('won', false);
+            localStorage.setItem('lost', false);
     
             setHasWon(false);
+            setHasLost(false);
             setGuesses([]);
         }
     }, []);
 
+    // Check for win/loss conditions
     useEffect(() => {
+        // Check for win
         if (hasWon && guesses.length > 0 && guesses[0].stationName === answerStation) {
-            setShowWinScreen(true);
+            setShowEndScreen(true);
+        }
+        
+        // Check for loss (ran out of guesses and haven't won)
+        const guessesLeft = MAX_GUESSES - guesses.length;
+        if (!hasWon && guessesLeft === 0 && guesses.length > 0) {
+            setHasLost(true);
+            localStorage.setItem('lost', true);
+            setShowEndScreen(true);
         }
     }, [hasWon, guesses, answerStation]);
 
     const handleSeeGuesses = () => {
-        setShowWinScreen(false);
+        setShowEndScreen(false);
     };
 
+    const getGuessesForDisplay = () => {
+        return guesses.map(g => ({
+        name: g.stationName.replace(/\s*station$/i, ''),
+        stationsAway: g.stationsAway
+        }));
+    };
+
+    useEffect(() => {
+        if (showEndScreen) {
+          const today = getTodayDateString();
+          // Only update if not already recorded for today
+
+          if (stats.lastGameDate !== today) {
+            const newStats = { ...stats };
+            newStats.gamesPlayed += 1;
+            if (hasWon) {
+              newStats.gamesWon += 1;
+              newStats.currentStreak = stats.lastGameResult === 'win' ? stats.currentStreak + 1 : 1;
+            } else {
+              newStats.currentStreak = 0;
+            }
+            newStats.lastGameDate = today;
+            newStats.lastGameResult = hasWon ? 'win' : 'lose';
+            setStats(newStats);
+            saveStats(newStats);
+          }
+        }
+    }, [showEndScreen, hasWon]);
+
     const addGuess = useCallback((stationGuess) => { 
-        if (hasWon) return;
+        if (hasWon || hasLost) return;
 
         const newGuesses = [
             new Guess(stationGuess, answerStation),
@@ -123,14 +187,13 @@ function Game() {
             setHasWon(true);
             localStorage.setItem('won', true);
         }
-    }, [guesses, answerStation]);
+    }, [guesses, answerStation, hasWon, hasLost]);
 
     const submitGuess = useCallback((guess) => {
         const isDuplicate = guesses.some(g => g.stationName === guess);
         if (isDuplicate) return;
     
         addGuess(guess);
-        console.log(guesses)
     }, [guesses, addGuess]);
 
     if (!answerStation) {
@@ -156,20 +219,28 @@ function Game() {
                     suggestions={stations}
                     guessesLeft={MAX_GUESSES - guesses.length}
                     onHelp={() => setShowTutorial(true)}
-                    />
+                    disabled={hasWon || hasLost} // Disable search if game is over
+                />
                 {showTutorial && (
                     <TutorialHighlighter onFinish={() => setShowTutorial(false)} />
                 )}
-                {showWinScreen && (
-                    <WinScreen
-                        stationName={answerStation}
-                        onSeeGuesses={handleSeeGuesses}
-                    />
+                {showEndScreen && (
+                    <EndScreen
+                    stationName={answerStation}
+                    guesses={getGuessesForDisplay()}
+                    maxGuesses={MAX_GUESSES}
+                    isWin={hasWon}
+                    onSeeGuesses={handleSeeGuesses}
+                    stats={{
+                      played: stats.gamesPlayed,
+                      wins: stats.gamesWon,
+                      streak: stats.currentStreak
+                    }}
+                  />
                 )}
             </GameContainer>
-
         </div>
     )
 }
 
-export default Game
+export default Game;

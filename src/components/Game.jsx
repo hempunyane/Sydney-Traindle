@@ -9,7 +9,7 @@ import CurrentStation from './CurrentStation';
 import StationHistory from './StationHistory';
 import EndScreen from './EndScreen';
 
-const MAX_GUESSES = 7;
+const MAX_GUESSES = 8;
 
 // import { TrainlinePopout, PieIconGenerator } from './trainlineIconDisplays';
 // import Timer from './timer';
@@ -57,27 +57,36 @@ const seededRandom = (seed) => {
 };
 
 const getTodayDateString = () => {
-    const d = new Date();
-    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-  };
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+};
+
+const getTodaysAnswer = (stations) => {
+  // Use days since 2000-01-01 as seed
+  const today = new Date();
+  const start = new Date(2000, 0, 1);
+  const daysSinceEpoch = Math.floor((today - start) / 86400000);
+  const randomIndex = Math.floor(seededRandom(daysSinceEpoch) * stations.length);
+  return stations[randomIndex];
+};
   
-  // Load stats from localStorage
-  const loadStats = () => {
-    const defaultStats = {
-      gamesPlayed: 0,
-      gamesWon: 0,
-      currentStreak: 0,
-      lastGameDate: '',
-      lastGameResult: null
-    };
-    const stored = localStorage.getItem('gameStats');
-    return stored ? JSON.parse(stored) : defaultStats;
+// Load stats from localStorage
+const loadStats = () => {
+  const defaultStats = {
+    gamesPlayed: 0,
+    gamesWon: 0,
+    currentStreak: 0,
+    lastGameDate: '',
+    lastGameResult: null
   };
-  
-  // Save stats
-  const saveStats = (stats) => {
-    localStorage.setItem('gameStats', JSON.stringify(stats));
-  };
+  const stored = localStorage.getItem('gameStats');
+  return stored ? JSON.parse(stored) : defaultStats;
+};
+
+// Save stats
+const saveStats = (stats) => {
+  localStorage.setItem('gameStats', JSON.stringify(stats));
+};
 
 function Game() {
     const theme = useTheme();
@@ -89,7 +98,7 @@ function Game() {
     const [hasWon, setHasWon] = useState(false);
     const [hasLost, setHasLost] = useState(false);
     const [showEndScreen, setShowEndScreen] = useState(false);
-    const [showTutorial, setShowTutorial] = useState(true);
+    const [showTutorial, setShowTutorial] = useState(false);
     const [stats, setStats] = useState(loadStats);
   
     useEffect(() => {
@@ -98,29 +107,29 @@ function Game() {
         const storedHasWon = JSON.parse(localStorage.getItem('won')) || false;
         const storedHasLost = JSON.parse(localStorage.getItem('lost')) || false;
 
-        /* mock date for testing */
-        const mockDate = new Date('2025-02-02');
-        const today = mockDate.toISOString().split('T')[0];
-    
+        const today = getTodayDateString();
+        const todaysAnswer = getTodaysAnswer(stations);
+        
+        const hasExistingData = storedDate !== null;
+        setShowTutorial(!hasExistingData);
+        // need ot not store answer in local
         if (storedDate === today) {
-            setAnswerStation(localStorage.getItem('answer'));
+            setAnswerStation(todaysAnswer);
             setGuesses(storedGuesses);
             setHasWon(storedHasWon);
             setHasLost(storedHasLost);
         } else {
-            const newAnswer = stations[Math.floor(Math.random() * stations.length)];
-            setAnswerStation(newAnswer);
-    
-            localStorage.setItem('gameDate', today);
-            localStorage.setItem('answer', newAnswer);
-            localStorage.setItem('selectedStations', JSON.stringify([]));
-            localStorage.setItem('won', false);
-            localStorage.setItem('lost', false);
-    
+            setAnswerStation(todaysAnswer);
             setHasWon(false);
             setHasLost(false);
             setGuesses([]);
+  
+            localStorage.setItem('gameDate', today);
+            localStorage.setItem('selectedStations', JSON.stringify([]));
+            localStorage.setItem('won', false);
+            localStorage.setItem('lost', false);
         }
+
     }, []);
 
     // Check for win/loss conditions
@@ -142,12 +151,12 @@ function Game() {
     const handleSeeGuesses = () => {
         setShowEndScreen(false);
     };
-
     const getGuessesForDisplay = () => {
-        return guesses.map(g => ({
-        name: g.stationName.replace(/\s*station$/i, ''),
-        stationsAway: g.stationsAway
-        }));
+      if (hasWon) {
+        return guesses.slice(1).map(g => g.stationName.replace(/\s*station$/i, ''));
+      } else {
+        return guesses.map(g => g.stationName.replace(/\s*station$/i, ''));
+      }
     };
 
     useEffect(() => {

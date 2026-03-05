@@ -8,14 +8,14 @@ import { FaShareAlt } from 'react-icons/fa';
 const Drawer = styled(motion.div)`
   position: fixed;
   top: 118px;
-  left: 14px;
-  right: 14px;
-  bottom: 0;
-  max-width: 600px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 65px); /* 14px margins on each side */
+  max-width: 530px;
   background: white;
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
-  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 -4px 30px rgba(0, 0, 0, 0.4);
   z-index: 1000;
   padding: 20px;
   overflow-y: auto;
@@ -65,6 +65,7 @@ const ShareIconButton = styled.button`
 const OrangeBox = styled.div`
   width: 100%;
   height: 80px;
+  z-index: 1;
   background-color: #F6891F;
   border-radius: 8px;
   display: flex;
@@ -84,8 +85,8 @@ const TimelineContainer = styled.div`
   margin-top: -5px;
   display: flex;
   gap: 0px;
-  margin-bottom: 40px;
-  height: calc(100vh - 400px); /* Dynamic height based on viewport */
+  margin-bottom: 0px;
+  height: calc(98vh - 400px); /* Dynamic height based on viewport */
   min-height: 300px; /* Minimum height to ensure visibility */
   max-height: 550px; /* Maximum height to prevent overflow */
 `;
@@ -104,51 +105,25 @@ const BarContainer = styled.div`
   margin-left: 20px;
 `;
 
-const DotContainer = styled.div`
+const Dot = styled.div`
   position: absolute;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 17px;
-  height: 17px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  width: 11px;
+  height: 11px;
+  background: white;
+  border: 2px solid #999;
+  border-radius: 50%;
   z-index: 2;
   pointer-events: none;
 `;
 
-const OuterRing = styled.div`
-  position: absolute;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background-color: #999; /* Gray border color */
-  z-index: 2;
-`;
-
-const InnerDot = styled.div`
-  position: absolute;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background-color: ${({ $color }) => {
-    switch($color) {
-      case 'green': return '#4CAF50';
-      case 'yellow': return '#FFC107';
-      case 'red': return '#F44336';
-      default: return 'white';
-    }
-  }};
-  border: 1px solid white;
-  z-index: 3;
-`;
-
 const LabelsContainer = styled.div`
-  margin-top: ${({ $height }) => `${$height/2}px`};
+  margin-top: ${({ $height }) => `${$height/2 - 7}px`};
   flex: 1;
   display: flex;
   flex-direction: column;
-  height: 99%;
+  height: 100%;
 `;
 
 const LabelRow = styled.div`
@@ -206,7 +181,7 @@ const EndScreen = ({
 	onSeeGuesses,
 	stats              // { played, wins, streak }
   }) => {
-	const totalSlots = maxGuesses; // number of dots
+	const totalSlots = maxGuesses - 1; // number of dots
 	const usedCount = guesses.length;
 	
 	// Create ref for TimelineContainer to get its height
@@ -266,11 +241,11 @@ const EndScreen = ({
 	return (
 	  <AnimatePresence>
 		<Drawer
-		  initial={{ y: '100%' }}
-		  animate={{ y: 0 }}
-		  exit={{ y: '100%' }}
-		  transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-		>
+        initial={{ y: '100%', x: '-50%' }}
+        animate={{ y: 0, x: '-50%' }}
+        exit={{ y: '100%', x: '-50%' }}
+        transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+      >
 		  <TopBar>
 			<SeeGuessesButton onClick={onSeeGuesses}>
 			  I want to see my guesses
@@ -288,17 +263,8 @@ const EndScreen = ({
 			<BarContainer $usedRatio={(usedCount / totalSlots) * 100}>
 			  {Array.from({ length: totalSlots }).map((_, i) => {
 				// Position dot at the center of each segment
-				const top = (i * segmentHeight) + segmentHeight;
-				const item = items[i];
-				const stationGuess = item !== 'flag' ? guesses[i] : null;
-				const dotColor = stationGuess ? getStopColor(stationGuess.stationsAway) : null;
-				
-				return (
-				  <DotContainer key={i} style={{ top: `${top}px` }}>
-					<OuterRing />
-					<InnerDot $color={dotColor} />
-				  </DotContainer>
-				);
+				const top = (i * segmentHeight) + segmentHeight;				
+				return <Dot key={i} style={{ top: `${top}px` }} />;
 			  })}
 			</BarContainer>
   
@@ -308,7 +274,7 @@ const EndScreen = ({
 				  {item === 'flag' ? (
 					<FlagIcon src="/Icons/Flag.svg" alt="unused guess" />
 				  ) : (
-					<span style={{ marginLeft: '16px' }}>{item.name}</span>
+					<span style={{ marginLeft: '16px' }}>{item}</span>
 				  )}
 				</LabelRow>
 			  ))}
@@ -334,6 +300,6 @@ const EndScreen = ({
 		</Drawer>
 	  </AnimatePresence>
 	);
-  };
+};
   
-  export default EndScreen;
+export default EndScreen;

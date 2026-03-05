@@ -30,7 +30,7 @@ const Container = styled('div')`
 // wrapper for the entire accordion
 const StationAccordion = styled(Accordion)`
     width: 100%;
-    margin: 0 0 8px 0 !important;
+    margin: 0 0 10px 0 !important;
     box-shadow: none !important;
     border-radius: 0 !important;
     border-bottom: none;
@@ -210,7 +210,7 @@ function StationHistory({ guesses, answerStation }) {
         <Container id='history-area'>
             <HeadingText
                 style={{ 
-                    paddingBottom: '4px', 
+                    paddingBottom: '10px', 
                     position: 'sticky', 
                     top: '-2px', 
                     background: 'white', 

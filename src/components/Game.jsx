@@ -257,7 +257,7 @@ function Game() {
                     }}
                   />
                 )}
-                {isMobile && <div style={{ height: '300px' }} />}
+                {isMobile && <div style={{ height: '400px' }} />}
             </GameContainer>
         </div>
     )

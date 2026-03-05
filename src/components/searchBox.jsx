@@ -13,25 +13,29 @@ const AutocompleteContainer = styled.div`
 
 const Autocomplete = styled.div`
     display: flex;
+    align-items: center; /* Vertically center all items */
     width: 90%;
-    height: 9vh;
+    min-height: 70px; /* Minimum height instead of fixed vh */
     border-bottom: 1px solid #777;
+    padding-bottom: 1vh;
     margin-bottom: 15px;
-    padding-bottom: 15px;
     position: relative;
+    gap: 8px; /* Add gap between input and guesses */
 `;
 
 const InputContainer = styled.div`
     position: relative;
-    flex: 2;
+    flex: 1; /* Take available space */
+    min-width: 0; /* Allow shrinking */
     display: flex;
     align-items: center;
+    height: 100%;
 `;
 
 const StyledInput = styled.input.attrs({
     tabIndex: -1,
 })`
-    margin: auto 0px 5px 0px;
+    margin: auto 0px 0px 0px;
     width: 100%;
     border: none;
     font-size: 24px;
@@ -45,6 +49,7 @@ const StyledInput = styled.input.attrs({
     user-select: none;
     touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
+    line-height: 1.2; /* Better line height for vertical alignment */
 
     &::placeholder {
         color: #919191;
@@ -54,8 +59,8 @@ const StyledInput = styled.input.attrs({
 const AutocompleteSuggestion = styled.div`
     position: absolute;
     left: 0;
-    bottom: 0px;
-    margin: auto 0px 6px 2px;
+    bottom: 0;
+    margin: auto 0px 2px 2px;
     font-size: 24px;
     color: #777;
     pointer-events: none;
@@ -63,6 +68,7 @@ const AutocompleteSuggestion = styled.div`
     display: flex;
     align-items: center;
     font-family: 'Arial', sans-serif;
+    line-height: 1.2;
 `;
 
 const VisiblePart = styled.span`

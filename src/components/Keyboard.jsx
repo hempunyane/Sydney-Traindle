@@ -22,7 +22,7 @@ const Key = styled.button`
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
   width: clamp(0px, 8%, 65px);
-  height: 50px;
+  height: 5vh;
   border: none;
   border-radius: 5px;
   background: #f1f1f1;

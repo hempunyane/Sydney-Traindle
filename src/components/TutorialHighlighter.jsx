@@ -68,12 +68,12 @@ const CurrentGuessDistTutorial = () => {
         <p>Your guess is:</p>
         <ArrowDisplay>
             <div></div>
-            <img src="public\Icons\arrow_up.svg"/>
+            <img src="/Icons/arrow_up.svg"/>
             <p><span className="bold">closer</span> to central than the correct station</p>
         </ArrowDisplay>
         <ArrowDisplay>
             <div></div>
-            <img src="public\Icons\arrow_down.svg"/>
+            <img src="/Icons/arrow_down.svg"/>
             <p><span className="bold">further</span> from central than the correct station</p>
         </ArrowDisplay>
     </TutorialBox>
@@ -104,23 +104,23 @@ const CurrentGuessTrainlinesTutorial = () => {
 
     return <TutorialBox width="300" height="300">
         <TrainlineImageContainer colour="#9EFB96">
-            <img src="public\Trainlines\T1.svg"></img>
-            <img src="public\Trainlines\T2.svg"></img>
-            <img src="public\Trainlines\T5.svg"></img>
+            <img src="/Trainlines/T1.svg"></img>
+            <img src="/Trainlines/T2.svg"></img>
+            <img src="/Trainlines/T5.svg"></img>
         </TrainlineImageContainer>
         <p>All trainlines are correct</p>
 
         <TrainlineImageContainer colour="#F4FA9C">
-            <img src="public\Trainlines\T1.svg"></img>
-            <img src="public\Trainlines\T2.svg"></img>
-            <img src="public\Trainlines\T5.svg"></img>
+            <img src="/Trainlines/T1.svg"></img>
+            <img src="/Trainlines/T2.svg"></img>
+            <img src="/Trainlines/T5.svg"></img>
         </TrainlineImageContainer>
         <p>Some trainlines are correct</p>
 
         <TrainlineImageContainer colour="#FF8888">
-            <img src="public\Trainlines\T1.svg"></img>
-            <img src="public\Trainlines\T2.svg"></img>
-            <img src="public\Trainlines\T5.svg"></img>
+            <img src="/Trainlines/T1.svg"></img>
+            <img src="/Trainlines/T2.svg"></img>
+            <img src="/Trainlines/T5.svg"></img>
         </TrainlineImageContainer>
         <p>No trainlines are correct</p>
     </TutorialBox>

@@ -24,9 +24,9 @@ const GameContainer = styled.div.attrs(() => ({}))`
   height: 100vh;
   width: ${props => (props.$isMobile ? '100%' : '600px')};
   box-sizing: border-box;
-  padding-top: 85px;
+  padding-top: 15px;
   position: fixed;
-  background: linear-gradient(to bottom, #F6891F 66px, white 66px);
+  background: white;
 `;
 
 const TopSection = styled.div`

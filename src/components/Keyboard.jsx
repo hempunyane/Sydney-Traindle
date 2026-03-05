@@ -64,9 +64,9 @@ const Key = styled.button`
   &.spacebar {
     flex-grow: 1;
     max-width: 250px;
-    height: 44px;
+    height: 5vh;
     margin-right: 10px;
-    margin-bottom: 40px;
+    margin-bottom: 10px;
   }
 `;
 
@@ -78,7 +78,6 @@ const BottomButtonRow = styled.div`
 `;
 
 const FooterButtonContainer = styled.div`
-  margin-top: 10px;
   display: flex;
   flex-direction: column;
   align-items: center;

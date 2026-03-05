@@ -18,7 +18,7 @@ const Autocomplete = styled.div`
     min-height: 70px; /* Minimum height instead of fixed vh */
     border-bottom: 1px solid #777;
     padding-bottom: 1vh;
-    margin-bottom: 15px;
+    margin-bottom: 7px;
     position: relative;
     gap: 8px; /* Add gap between input and guesses */
 `;
@@ -60,7 +60,7 @@ const AutocompleteSuggestion = styled.div`
     position: absolute;
     left: 0;
     bottom: 0;
-    margin: auto 0px 2px 2px;
+    margin: auto 0px 1px 2px;
     font-size: 24px;
     color: #777;
     pointer-events: none;

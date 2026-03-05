@@ -100,18 +100,25 @@ function Game() {
     const [showEndScreen, setShowEndScreen] = useState(false);
     const [showTutorial, setShowTutorial] = useState(false);
     const [stats, setStats] = useState(loadStats);
+
+    const initialized = React.useRef(false);
   
     useEffect(() => {
+        if (initialized.current) return;
+        initialized.current = true;
+
         const storedDate = localStorage.getItem('gameDate');
         const storedGuesses = JSON.parse(localStorage.getItem('selectedStations')) || [];
         const storedHasWon = JSON.parse(localStorage.getItem('won')) || false;
         const storedHasLost = JSON.parse(localStorage.getItem('lost')) || false;
 
         const today = getTodayDateString();
+        //const mockDate = new Date('2025-02-03');
+        //const today = mockDate.toISOString().split('T')[0];
         const todaysAnswer = getTodaysAnswer(stations);
         
-        const hasExistingData = storedDate !== null;
-        setShowTutorial(!hasExistingData);
+        const isFirstVisit = storedDate === null;
+        setShowTutorial(isFirstVisit);
         // need ot not store answer in local
         if (storedDate === today) {
             setAnswerStation(todaysAnswer);
@@ -155,7 +162,7 @@ function Game() {
       if (hasWon) {
         return guesses.slice(1).map(g => g.stationName.replace(/\s*station$/i, ''));
       } else {
-        return guesses.map(g => g.stationName.replace(/\s*station$/i, ''));
+        return guesses.slice(1).map(g => g.stationName.replace(/\s*station$/i, ''));
       }
     };
 
@@ -231,7 +238,10 @@ function Game() {
                     disabled={hasWon || hasLost} // Disable search if game is over
                 />
                 {showTutorial && (
-                    <TutorialHighlighter onFinish={() => setShowTutorial(false)} />
+                    <TutorialHighlighter 
+                        onFinish={() => setShowTutorial(false)} 
+                        show={showTutorial} 
+                    />
                 )}
                 {showEndScreen && (
                     <EndScreen

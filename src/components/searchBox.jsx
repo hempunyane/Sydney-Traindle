@@ -155,7 +155,8 @@ class SearchBox extends React.PureComponent {
                 this.setState({
                     value: '',
                     currentSuggestion: "",
-                    showSuggestion: false
+                    showSuggestion: false,
+                    nextCapital: true // Reset to capital mode after submit
                 });
             }
             return;
@@ -173,6 +174,10 @@ class SearchBox extends React.PureComponent {
                 newValue = value.slice(0, start) + value.slice(end);
                 newCursorPos = start;
             }
+            
+            // Recalculate capitalisation after backspace based on cursor position
+            const prevChar = newValue[newCursorPos - 1];
+            nextCapitalState = !newValue || prevChar === ' ';
         } else {
             // character / space input
             let charToInsert = key;
@@ -187,12 +192,6 @@ class SearchBox extends React.PureComponent {
 
             newValue = value.slice(0, start) + charToInsert + value.slice(end);
             newCursorPos = start + charToInsert.length;
-        }
-
-        // Recalculate capitalisation after backspace based on cursor position
-        if (key === 'Backspace') {
-            const prevChar = newValue[newCursorPos - 1];
-            nextCapitalState = !newValue || prevChar === ' ';
         }
         
         const suggestion = this.getFilteredSuggestions(newValue);
@@ -228,8 +227,6 @@ class SearchBox extends React.PureComponent {
             );
         }, 0);
     };
-
-
 
     render() {
         const { value, currentSuggestion, showSuggestion, nextCapital } = this.state;

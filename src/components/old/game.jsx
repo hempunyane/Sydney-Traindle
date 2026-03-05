@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
-import StationInput from './stationInput';
-import StationTable from './stationTable';
-import MobileLayout from './mobileLayout';
-import trainNetwork from "../helper/TrainNetwork";
+import StationInput from '../stationInput';
+import StationTable from '../stationTable';
+import MobileLayout from '../mobileLayout';
+import trainNetwork from "../../helper/TrainNetwork";
+import Header from '../pageHeader'
 import {motion} from 'framer-motion';
-import Tutorial from './Tutorial';
+import Tutorial from '../Tutorial';
 
+// OLD LOGIC OUTDATED CODE DO NOT USE
 function Game({ useNewVersion }) {
   // states for stations that the user entered, the correct station and keep track if user has won
   const [selectedStations, setSelectedStations] = useState([]);
@@ -105,20 +107,33 @@ function Game({ useNewVersion }) {
 
 
   return (
-    <div className="game">
-      <div className="title">
-        <h1>
-          <img id='t-logo' src="/Logos/TfNSW_T.svg"></img> Sydney Traindle
-        </h1>
-      </div>
-      {useNewVersion ? (
-        <MobileLayout answerStation={answer} />
+      useNewVersion ? (
+        // answerStation={answer}
+        <MobileLayout/>
       ) : (
         tutorial ? (
+          <>
+          <Header/>
+          <div className="game">
+          <div className="title">
+            <h1>
+              <img id='t-logo' src="/Logos/TfNSW_T.svg"></img> Sydney Traindle
+            </h1>
+          </div>
+          </div>
           <Tutorial tutorial={tutorial} setTutorial={setTutorial} />
+          </>
         ) : (
           answer && (
             <>
+              <Header/>
+              <div className="game">
+              <div className="title">
+                <h1>
+                  <img id='t-logo' src="/Logos/TfNSW_T.svg"></img> Sydney Traindle
+                </h1>
+              </div>
+              </div>
               {hasWon ? (
                 <div className='win-blur'>
                   <motion.div {...winAnimation} className="win-container">
@@ -175,8 +190,7 @@ function Game({ useNewVersion }) {
             </>
           )
         )
-      )}
-    </div>
+      )
   );
 }
 

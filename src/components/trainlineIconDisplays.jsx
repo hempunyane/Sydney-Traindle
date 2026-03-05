@@ -290,3 +290,68 @@ export class TrainlinePopout extends React.Component {
         return null
     }
 }
+
+export class BarDisplay extends React.Component {
+    constructor(props){
+        super(props)
+        this.state = {
+            showPopout: true
+        }
+    }
+
+    createColourCombination(trainlines){
+        if (!trainlines){
+            return
+        }
+        const BarColour = styled.div`
+                width: 35px;
+                height: 4px;
+                background-color: ${({ colour }) => colour};
+        `
+        const colours = {
+            "T1": `rgb(246, 145, 16)`,
+            "T2": `rgb(8, 151, 209)`,
+            "T3": `rgb(242, 93, 27)`,
+            "T4": `rgb(30, 86, 168)`,
+            "T5": `rgb(196, 17, 144)`,
+            "T7": `rgb(105, 124, 138)`,
+            "T8": `rgb(10, 150, 73)`,
+            "T9": `rgb(210, 26, 45)`,
+            "M1": `rgb(0, 150, 159)`
+        } 
+        let selectedColourDivs = []
+        for (let i = 0; i < trainlines.length; i++){
+            selectedColourDivs.push(
+                <BarColour key={i} colour={colours[trainlines[i]]}/>
+            )
+        }
+        return selectedColourDivs
+    }
+
+    render(){
+        if (this.state.showPopout) {
+            const BarContainer = styled.div`
+                display: flex;
+                position: absolute;
+                align-items: center;
+                height: 4px;
+                bottom: 4px;
+            `;
+
+            return <BarContainer>
+                {this.createColourCombination(this.props.trainlines)}
+            </BarContainer>
+        }
+        return null
+    }
+}
+
+export class BoxDisplay extends React.Component {
+    constructor(props){
+        super(props)
+    }
+
+    render(){
+        
+    }
+}

@@ -4,16 +4,16 @@ import styled from 'styled-components';
 const KeyboardContainer = styled.div`
   display: flex;
   flex-direction: column;
+  width: 98%;
   gap: 15px;
   border-radius: 8px;
   margin-top: 10px;
-  margin-bottom: 30px;
 `;
 
 const KeyboardRow = styled.div`
   display: flex;
   justify-content: center;
-  gap: 10px;
+  gap: 2.5%;
 `;
 
 const Key = styled.button`
@@ -21,12 +21,12 @@ const Key = styled.button`
   user-select: none;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
-  min-width: 40px;
+  width: clamp(0px, 8%, 65px);
   height: 50px;
   border: none;
   border-radius: 5px;
   background: #f1f1f1;
-  font-size: 25px;
+  font-size: 22px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -42,7 +42,7 @@ const Key = styled.button`
   }
   
   &.enter {
-    min-width: 65px;
+    width: clamp(40px, 15vw, 65px);
     font-weight: bold;
     font-size: 16px;
   }
@@ -58,13 +58,14 @@ const Key = styled.button`
   }
   
   &.backspace {
-    min-width: 65px;
+    width: clamp(40px, 12vw, 65px);
   }
 
   &.spacebar {
     flex-grow: 1;
     max-width: 250px;
     height: 44px;
+    margin-right: 10px;
     margin-bottom: 40px;
   }
 `;
@@ -111,11 +112,16 @@ const FooterIcon = styled.img`
   height: 25px;
 `;
 
-const Text = styled.div`
+const Text1 = styled.div`
+  font-size: 12px;
   margin-top: 4px;
 `;
 
-function Keyboard({onKeyPress, onLegendClick, onMapClick, disableEnter}) {
+const Text2 = styled.div`
+  font-size: 12px;
+`;
+
+function Keyboard({onKeyPress, disableEnter, isCapitalMode = false, onHelp}) {
   const topRow = ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'];
   const middleRow = ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'];
   const bottomRow = ['z', 'x', 'c', 'v', 'b', 'n', 'm'];
@@ -124,16 +130,30 @@ function Keyboard({onKeyPress, onLegendClick, onMapClick, disableEnter}) {
     onKeyPress(key);
   };
 
+  const handleMapClick = () => {
+    console.log("Map Clicked")
+  }
+
+  const handleHelpClick = () => {
+    if (onHelp) {
+      onHelp();
+    }
+  };
+
   return (
     <KeyboardContainer>
       <KeyboardRow>
         {topRow.map(key => (
-          <Key key={key} onClick={() => handleKeyClick(key)}>{key}</Key>
+          <Key key={key} onClick={() => handleKeyClick(key)}>
+            {isCapitalMode ? key.toUpperCase() : key}
+          </Key>
         ))}
       </KeyboardRow>
       <KeyboardRow>
         {middleRow.map(key => (
-          <Key key={key} onClick={() => handleKeyClick(key)}>{key}</Key>
+          <Key key={key} onClick={() => handleKeyClick(key)}>
+            {isCapitalMode ? key.toUpperCase() : key}
+          </Key>
         ))}
       </KeyboardRow>
       <KeyboardRow>
@@ -145,7 +165,9 @@ function Keyboard({onKeyPress, onLegendClick, onMapClick, disableEnter}) {
         Enter
       </Key>
         {bottomRow.map(key => (
-          <Key key={key} onClick={() => handleKeyClick(key)}>{key}</Key>
+          <Key key={key} onClick={() => handleKeyClick(key)}>
+            {isCapitalMode ? key.toUpperCase() : key}
+          </Key>
         ))}
         <Key className="backspace" onClick={() => handleKeyClick('Backspace')}>
           <img src="/Icons/Delete.svg" alt="Backspace" width={24} />
@@ -154,10 +176,10 @@ function Keyboard({onKeyPress, onLegendClick, onMapClick, disableEnter}) {
 
       <BottomButtonRow>
         <FooterButtonContainer>
-          <FooterIconWrapper onClick={onLegendClick}>
-            <img src="./Icons/Legend.svg" alt="Legend" width="35" height="35"/>
-          </FooterIconWrapper>
-          <div>Legend</div>
+          <FooterButton className="cursor-hover" onClick={handleMapClick}>
+            <FooterIcon src="./Icons/pin.svg" alt="Map" />
+          </FooterButton>
+          <Text1>Map</Text1>
         </FooterButtonContainer>
 
         <Key className="spacebar" onClick={() => handleKeyClick(' ')}>
@@ -165,10 +187,10 @@ function Keyboard({onKeyPress, onLegendClick, onMapClick, disableEnter}) {
         </Key>
 
         <FooterButtonContainer>
-          <FooterButton className="cursor-hover" onClick={onMapClick}>
-            <FooterIcon src="./Icons/pin.svg" alt="Map" />
-          </FooterButton>
-          <Text>Map</Text>
+          <FooterIconWrapper onClick={handleHelpClick}>
+            <img src="./Icons/Legend.svg" alt="Help" width="35" height="35"/>
+          </FooterIconWrapper>
+          <Text2>Help</Text2>
         </FooterButtonContainer>
       </BottomButtonRow>
 

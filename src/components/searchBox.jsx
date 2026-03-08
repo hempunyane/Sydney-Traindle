@@ -75,7 +75,7 @@ const AutocompleteSuggestion = styled.div`
     right: 0;
     top: 0;
     bottom: 0;
-    margin-left: -1px;
+    margin-left: ${({ $isMobile }) => $isMobile ? '-2px' : '0px'};
     display: flex;
     align-items: end;
     font-size: 24px;
@@ -277,7 +277,7 @@ class SearchBox extends React.PureComponent {
                                 onTouchStart={this.handleInputSelect}
                             />
                             {showSuggestion && (
-                                <AutocompleteSuggestion>
+                                <AutocompleteSuggestion $isMobile={this.props.isMobile}>
                                     <VisiblePart>{value}</VisiblePart>
                                     <SuggestionPart>{suggestionPart}</SuggestionPart>
                                 </AutocompleteSuggestion>

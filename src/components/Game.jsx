@@ -238,7 +238,8 @@ function Game() {
                     guessesLeft={MAX_GUESSES - guesses.length}
                     onHelp={() => setShowTutorial(true)}
                     onMap={() => setShowMap(true)}
-                    disabled={hasWon || hasLost} // Disable search if game is over
+                    disabled={hasWon || hasLost}
+                    isMobile={isMobile}
                 />
                 {showTutorial && (
                     <TutorialHighlighter 

@@ -75,6 +75,7 @@ const AutocompleteSuggestion = styled.div`
     right: 0;
     top: 0;
     bottom: 0;
+    margin-left: -1px;
     display: flex;
     align-items: end;
     font-size: 24px;

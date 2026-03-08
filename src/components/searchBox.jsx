@@ -20,7 +20,6 @@ const Autocomplete = styled.div`
     padding-bottom: 1vh;
     margin-bottom: 7px;
     position: relative;
-    gap: 8px; /* Add gap between input and guesses */
 `;
 
 const InputContainer = styled.div`
@@ -43,9 +42,6 @@ const StyledInput = styled.input.attrs({
     color: #000;
     outline: none;
     caret-color: black;
-    background: transparent;
-    position: relative;
-    z-index: 2;
     -webkit-user-select: none;
     user-select: none;
     touch-action: manipulation;
@@ -53,7 +49,6 @@ const StyledInput = styled.input.attrs({
     position: relative;
     z-index: 2;
     background: transparent;
-    line-height: 1.2; /* Better line height for vertical alignment */
 
     &::placeholder {
         color: #919191;
@@ -83,23 +78,16 @@ const AutocompleteSuggestion = styled.div`
     pointer-events: none;
     z-index: 1;
     font-family: 'Arial', sans-serif;
-    line-height: 1.2;
 `;
 
 const VisiblePart = styled.span`
     color: transparent;
     white-space: pre;
-    font-family: inherit;
-    font-size: inherit;
-    line-height: inherit;
 `;
 
 const SuggestionPart = styled.span`
     color: #777;
     white-space: pre;
-    font-family: inherit;
-    font-size: inherit;
-    line-height: inherit;
 `;
 
 const NextGuessBadge = styled.div`

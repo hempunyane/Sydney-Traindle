@@ -75,9 +75,9 @@ const AutocompleteSuggestion = styled.div`
     right: 0;
     top: 0;
     bottom: 0;
-    margin-left: ${({ $isMobile }) => $isMobile ? '-2px' : '0px'};
+
     display: flex;
-    align-items: end;
+    align-items: flex-end;
     font-size: 24px;
     color: #777;
     pointer-events: none;

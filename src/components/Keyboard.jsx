@@ -120,7 +120,7 @@ const Text2 = styled.div`
   font-size: 12px;
 `;
 
-function Keyboard({onKeyPress, disableEnter, isCapitalMode = false, onHelp}) {
+function Keyboard({onKeyPress, disableEnter, isCapitalMode = false, onHelp, onMap}) {
   const topRow = ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'];
   const middleRow = ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'];
   const bottomRow = ['z', 'x', 'c', 'v', 'b', 'n', 'm'];
@@ -129,13 +129,15 @@ function Keyboard({onKeyPress, disableEnter, isCapitalMode = false, onHelp}) {
     onKeyPress(key);
   };
 
-  const handleMapClick = () => {
-    console.log("Map Clicked")
-  }
-
   const handleHelpClick = () => {
     if (onHelp) {
       onHelp();
+    }
+  };
+
+  const handleMapClick = () => {
+    if (onMap) {
+      onMap();
     }
   };
 
@@ -174,7 +176,7 @@ function Keyboard({onKeyPress, disableEnter, isCapitalMode = false, onHelp}) {
       </KeyboardRow>
 
       <BottomButtonRow>
-        <FooterButtonContainer>
+        <FooterButtonContainer onClick={handleMapClick}>
           <FooterButton className="cursor-hover" onClick={handleMapClick}>
             <FooterIcon src="./Icons/pin.svg" alt="Map" />
           </FooterButton>

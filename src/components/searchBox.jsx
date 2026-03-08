@@ -25,7 +25,7 @@ const Autocomplete = styled.div`
 
 const InputContainer = styled.div`
     position: relative;
-    flex: 1; /* Take available space */
+    flex: 2; /* Take available space */
     min-width: 0; /* Allow shrinking */
     display: flex;
     align-items: center;
@@ -37,6 +37,7 @@ const StyledInput = styled.input.attrs({
 })`
     margin: auto 0px 0px 0px;
     width: 100%;
+    padding: 0px;
     border: none;
     font-size: 24px;
     color: #000;
@@ -49,6 +50,9 @@ const StyledInput = styled.input.attrs({
     user-select: none;
     touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
+    position: relative;
+    z-index: 2;
+    background: transparent;
     line-height: 1.2; /* Better line height for vertical alignment */
 
     &::placeholder {
@@ -56,17 +60,27 @@ const StyledInput = styled.input.attrs({
     }
 `;
   
+const InputWrapper = styled.div`
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    height: 100%;
+`;
+
+
 const AutocompleteSuggestion = styled.div`
     position: absolute;
     left: 0;
+    right: 0;
+    top: 0;
     bottom: 0;
-    margin: auto 0px 1px 2px;
+    display: flex;
+    align-items: end;
     font-size: 24px;
     color: #777;
     pointer-events: none;
     z-index: 1;
-    display: flex;
-    align-items: center;
     font-family: 'Arial', sans-serif;
     line-height: 1.2;
 `;
@@ -74,11 +88,17 @@ const AutocompleteSuggestion = styled.div`
 const VisiblePart = styled.span`
     color: transparent;
     white-space: pre;
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
 `;
 
 const SuggestionPart = styled.span`
     color: #777;
     white-space: pre;
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
 `;
 
 const NextGuessBadge = styled.div`
@@ -245,20 +265,23 @@ class SearchBox extends React.PureComponent {
                 <Autocomplete>
                     <NextGuessBadge>Next Guess</NextGuessBadge>
                     <InputContainer>
-                        <StyledInput
-                            ref={(ref) => this.inputRef = ref}
-                            value={value}
-                            placeholder="Station Name"
-                            autoComplete="off"
-                            inputMode="none"
-                            onChange={() => {}}
-                            onTouchStart={this.handleInputSelect}
-                        />
-                        {showSuggestion && (
-                            <AutocompleteSuggestion>
-                                <VisiblePart>{value}</VisiblePart><SuggestionPart>{suggestionPart}</SuggestionPart>
-                            </AutocompleteSuggestion>
-                        )}
+                        <InputWrapper>
+                            <StyledInput
+                                ref={(ref) => this.inputRef = ref}
+                                value={value}
+                                placeholder="Station Name"
+                                autoComplete="off"
+                                inputMode="none"
+                                onChange={() => {}}
+                                onTouchStart={this.handleInputSelect}
+                            />
+                            {showSuggestion && (
+                                <AutocompleteSuggestion>
+                                    <VisiblePart>{value}</VisiblePart>
+                                    <SuggestionPart>{suggestionPart}</SuggestionPart>
+                                </AutocompleteSuggestion>
+                            )}
+                        </InputWrapper>
                     </InputContainer>
                     <GuessesLeft guessesLeft={this.props.guessesLeft} />
                 </Autocomplete>
@@ -267,6 +290,7 @@ class SearchBox extends React.PureComponent {
                     disableEnter={!showSuggestion}
                     isCapitalMode={nextCapital}
                     onHelp={this.props.onHelp}
+                    onMap={this.props.onMap}
                 />
             </AutocompleteContainer>
         );

@@ -8,6 +8,7 @@ import TutorialHighlighter from './TutorialHighlighter';
 import CurrentStation from './CurrentStation';
 import StationHistory from './StationHistory';
 import EndScreen from './EndScreen';
+import Hint from './hint';
 
 const MAX_GUESSES = 8;
 
@@ -100,6 +101,7 @@ function Game() {
     const [showEndScreen, setShowEndScreen] = useState(false);
     const [showTutorial, setShowTutorial] = useState(false);
     const [stats, setStats] = useState(loadStats);
+    const [showMap, setShowMap] = useState(false);
 
     const initialized = React.useRef(false);
   
@@ -235,6 +237,7 @@ function Game() {
                     suggestions={stations}
                     guessesLeft={MAX_GUESSES - guesses.length}
                     onHelp={() => setShowTutorial(true)}
+                    onMap={() => setShowMap(true)}
                     disabled={hasWon || hasLost} // Disable search if game is over
                 />
                 {showTutorial && (
@@ -256,6 +259,12 @@ function Game() {
                       streak: stats.currentStreak
                     }}
                   />
+                )}
+                {showMap && (
+                    <Hint 
+                        isOpen={showMap} 
+                        onClose={() => setShowMap(false)} 
+                    />
                 )}
                 {isMobile && <div style={{ height: '450px' }} />}
             </GameContainer>

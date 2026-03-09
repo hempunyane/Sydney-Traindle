@@ -21,7 +21,6 @@ body {
   overflow-x: hidden;
 }
 
-/* Add a white background container that starts after the orange area */
 body::before {
   content: '';
   position: fixed;
@@ -30,7 +29,7 @@ body::before {
   right: 0;
   bottom: 0;
   background-color: #ebece6;
-  z-index: -1;
+  z-index: -4;
   pointer-events: none;
 }
 

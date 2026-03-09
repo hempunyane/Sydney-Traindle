@@ -65,16 +65,16 @@ const CurrentGuessDistTutorial = () => {
 
     return <TutorialBox width="300" height="250" offset={-100}>
         <p><span className="bold">Distance</span></p>
-        <p>Your guess is:</p>
+        <p>The correct station is is:</p>
         <ArrowDisplay>
             <div></div>
             <img src="/Icons/arrow_up.svg"/>
-            <p><span className="bold">closer</span> to central than the correct station</p>
+            <p><span className="bold">Further away</span> from Central Station than this guess</p>
         </ArrowDisplay>
         <ArrowDisplay>
             <div></div>
             <img src="/Icons/arrow_down.svg"/>
-            <p><span className="bold">further</span> from central than the correct station</p>
+            <p><span className="bold">Closer to</span> Central Station than this guess</p>
         </ArrowDisplay>
     </TutorialBox>
 }

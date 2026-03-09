@@ -65,7 +65,7 @@ const CurrentGuessDistTutorial = () => {
 
     return <TutorialBox width="300" height="250" offset={-100}>
         <p><span className="bold">Distance</span></p>
-        <p>The correct station is is:</p>
+        <p>The correct station is:</p>
         <ArrowDisplay>
             <div></div>
             <img src="/Icons/arrow_up.svg"/>

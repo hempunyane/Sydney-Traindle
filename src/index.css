@@ -25,7 +25,7 @@ body {
 body::before {
   content: '';
   position: fixed;
-  top: 1px; /* Start after the orange area */
+  top: 0px; /* Start after the orange area */
   left: 0;
   right: 0;
   bottom: 0;

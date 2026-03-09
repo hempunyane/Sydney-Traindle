@@ -13,7 +13,7 @@ const KeyboardContainer = styled.div`
 const KeyboardRow = styled.div`
   display: flex;
   justify-content: center;
-  gap: 2.5%;
+  gap: 1.8%;
 `;
 
 const Key = styled.button`
@@ -21,7 +21,7 @@ const Key = styled.button`
   user-select: none;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
-  width: clamp(0px, 8%, 65px);
+  width: clamp(0px, 9%, 65px);
   height: 5vh;
   border: none;
   border-radius: 5px;

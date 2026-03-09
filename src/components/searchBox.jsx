@@ -49,6 +49,7 @@ const StyledInput = styled.input.attrs({
     position: relative;
     z-index: 2;
     background: transparent;
+    font-family: 'Arial', sans-serif;
 
     &::placeholder {
         color: #919191;
@@ -77,6 +78,7 @@ const AutocompleteSuggestion = styled.div`
     color: #777;
     pointer-events: none;
     z-index: 1;
+    font-family: 'Arial', sans-serif;
 `;
 
 const VisiblePart = styled.span`

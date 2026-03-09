@@ -72,7 +72,7 @@ const Key = styled.button`
 
 const BottomButtonRow = styled.div`
   display: flex;
-  justify-content: space-around;
+  justify-content: space-evenly;
   align-items: center;
   width: 100%;
 `;

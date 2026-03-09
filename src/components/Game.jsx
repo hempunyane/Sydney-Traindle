@@ -268,7 +268,6 @@ function Game() {
                         onClose={() => setShowMap(false)} 
                     />
                 )}
-                {/*{isMobile && <div style={{ height: '450px' }} />}*/}
             </GameContainer>
         </div>
     )

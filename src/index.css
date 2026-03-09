@@ -3,23 +3,46 @@
   src: url('ttf/PublicSans-Regular.ttf');
 }
 
+/* Remove the gradient from body, we'll handle it differently */
 html {
-  background-color: #F6891F; /* Orange for the top area */
+  background-color: #F6891F; /* Orange for the entire background */
   min-height: 100%;
+  height: 100%;
 }
 
 body {
-  background: linear-gradient(
-    to bottom,
-    #F6891F 0%,
-    #F6891F 118px,
-    white 118px,
-    white 100%
-  );
-  background-attachment: fixed;
-  font-family: Public Sans NSW;
+  background-color: transparent; /* Let the orange show through */
+  font-family: Public Sans NSW, 'Public Sans', sans-serif;
   margin: 0;
   padding: 0;
+  min-height: 100vh;
+  min-height: 100dvh; /* Use dynamic viewport height */
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Add a white background container that starts after the orange area */
+body::before {
+  content: '';
+  position: fixed;
+  top: 118px; /* Start after the orange area */
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: white;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* For home screen apps on iOS */
+@media (display-mode: standalone) {
+  body {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+  
+  body::before {
+    top: calc(118px + env(safe-area-inset-top, 0px));
+  }
 }
 
 .background-container {

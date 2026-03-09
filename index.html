@@ -29,6 +29,31 @@
     <link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
   </head>
   <body>
+    <script>
+      // Force the orange top bar on Safari
+      (function() {
+        // Check if it's Safari
+        const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+        
+        if (isSafari) {
+          // Create a fixed orange bar at the top
+          const orangeBar = document.createElement('div');
+          orangeBar.style.position = 'fixed';
+          orangeBar.style.top = '0';
+          orangeBar.style.left = '0';
+          orangeBar.style.right = '0';
+          orangeBar.style.height = '118px';
+          orangeBar.style.backgroundColor = '#F6891F';
+          orangeBar.style.zIndex = '9999';
+          orangeBar.style.pointerEvents = 'none';
+          document.body.appendChild(orangeBar);
+          
+          // Adjust body padding
+          document.body.style.paddingTop = '0';
+        }
+      })();
+    </script>
+  
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
     <script>

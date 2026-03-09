@@ -100,6 +100,7 @@ function Game() {
     const [hasWon, setHasWon] = useState(false);
     const [hasLost, setHasLost] = useState(false);
     const [showEndScreen, setShowEndScreen] = useState(false);
+    const [isEndScreenOpen, setIsEndScreenOpen] = useState(true);
     const [showTutorial, setShowTutorial] = useState(false);
     const [stats, setStats] = useState(loadStats);
     const [showMap, setShowMap] = useState(false);
@@ -158,9 +159,6 @@ function Game() {
         }
     }, [hasWon, guesses, answerStation]);
 
-    const handleSeeGuesses = () => {
-        setShowEndScreen(false);
-    };
     const getGuessesForDisplay = () => {
       if (hasWon) {
         return guesses.slice(1).map(g => g.stationName.replace(/\s*station$/i, ''));
@@ -215,6 +213,14 @@ function Game() {
         addGuess(guess);
     }, [guesses, addGuess]);
 
+    const handleSeeGuesses = () => {
+      setIsEndScreenOpen(false); // Close the drawer
+    };
+    
+    const handleReopenEndScreen = () => {
+        setIsEndScreenOpen(true); // Reopen the drawer
+    };
+
     if (!answerStation) {
         return <div>Loading...</div>;
     }
@@ -249,19 +255,21 @@ function Game() {
                     />
                 )}
                 {showEndScreen && (
-                    <EndScreen
-                    stationName={answerStation}
-                    guesses={getGuessesForDisplay()}
-                    maxGuesses={MAX_GUESSES}
-                    isWin={hasWon}
-                    onSeeGuesses={handleSeeGuesses}
-                    stats={{
-                      played: stats.gamesPlayed,
-                      wins: stats.gamesWon,
-                      streak: stats.currentStreak
-                    }}
+                  <EndScreen
+                      stationName={answerStation}
+                      guesses={getGuessesForDisplay()}
+                      maxGuesses={MAX_GUESSES}
+                      isWin={hasWon}
+                      onSeeGuesses={handleSeeGuesses}
+                      onReopen={handleReopenEndScreen}
+                      isOpen={isEndScreenOpen}
+                      stats={{
+                          played: stats.gamesPlayed,
+                          wins: stats.gamesWon,
+                          streak: stats.currentStreak
+                      }}
                   />
-                )}
+              )}
                 {showMap && (
                     <Hint 
                         isOpen={showMap} 

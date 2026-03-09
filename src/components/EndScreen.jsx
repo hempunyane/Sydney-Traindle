@@ -10,7 +10,7 @@ const Drawer = styled(motion.div)`
   top: 118px;
   left: 50%;
   transform: translateX(-50%);
-  width: calc(100% - 65px); /* 14px margins on each side */
+  width: calc(100% - 65px);
   max-width: 530px;
   background: white;
   border-top-left-radius: 20px;
@@ -21,12 +21,44 @@ const Drawer = styled(motion.div)`
   overflow-y: auto;
   display: flex;
   flex-direction: column;
+  /* Use dvh for dynamic viewport height */
+  max-height: calc(100dvh - 140px);
+  bottom: env(safe-area-inset-bottom, 0px);
+`;
+
+const ReopenButton = styled(motion.button)`
+  position: fixed;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 10px);
+  background-color: #F6891F;
+  color: white;
+  border: none;
+  border-radius: 30px;
+  padding: 12px 24px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  
+  /* Ensure it's above other content but below drawer */
+  &:hover {
+    background-color: #e07b1f;
+  }
+  
+  /* Style for the arrow */
+  span {
+    font-size: 24px;
+    line-height: 1;
+  }
 `;
 
 const TopBar = styled.div`
   display: flex;
   align-items: center;
-  margin-bottom: 40px;
+  margin-bottom: 3vh;
   position: relative;
 `;
 
@@ -86,9 +118,9 @@ const TimelineContainer = styled.div`
   display: flex;
   gap: 0px;
   margin-bottom: 0px;
-  height: calc(98vh - 400px); /* Dynamic height based on viewport */
-  min-height: 300px; /* Minimum height to ensure visibility */
-  max-height: 550px; /* Maximum height to prevent overflow */
+  height: calc(98dvh - 400px);
+  min-height: 300px;
+  max-height: 550px;
 `;
 
 const BarContainer = styled.div`
@@ -101,7 +133,7 @@ const BarContainer = styled.div`
     #CCCCCC ${$usedRatio}%, 
     #CCCCCC 100%)`};
   border-radius: 5px;
-  margin-top: 0px; /* Removed negative margin */
+  margin-top: 0px;
   margin-left: 20px;
 `;
 
@@ -179,8 +211,10 @@ const EndScreen = ({
 	maxGuesses,        // MAX_GUESSES from Game
 	isWin, 
 	onSeeGuesses,
-	stats              // { played, wins, streak }
-  }) => {
+	stats,             // { played, wins, streak }
+	isOpen,            // Control whether the drawer is open
+	onReopen           // Function to reopen the drawer
+}) => {
 	const totalSlots = maxGuesses - 1; // number of dots
 	const usedCount = guesses.length;
 	
@@ -239,66 +273,82 @@ const EndScreen = ({
 	  : 0;
   
 	return (
-	  <AnimatePresence>
-		<Drawer
-        initial={{ y: '100%', x: '-50%' }}
-        animate={{ y: 0, x: '-50%' }}
-        exit={{ y: '100%', x: '-50%' }}
-        transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-      >
-		  <TopBar>
-			<SeeGuessesButton onClick={onSeeGuesses}>
-			  I want to see my guesses
-			</SeeGuessesButton>
-			<ShareIconButton onClick={handleShare}>
-			  <FaShareAlt />
-			</ShareIconButton>
-		  </TopBar>
+	  <>
+		<AnimatePresence>
+		  {isOpen && (
+			<Drawer
+			  initial={{ y: '100%', x: '-50%' }}
+			  animate={{ y: 0, x: '-50%' }}
+			  exit={{ y: '100%', x: '-50%' }}
+			  transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+			>
+			  <TopBar>
+				<SeeGuessesButton onClick={onSeeGuesses}>
+				  See my guesses
+				</SeeGuessesButton>
+				<ShareIconButton onClick={handleShare}>
+				  <FaShareAlt />
+				</ShareIconButton>
+			  </TopBar>
   
-		  <OrangeBox>
-			<StationNameBig>{stationName.replace(/\s*station$/i, '')}</StationNameBig>
-		  </OrangeBox>
+			  <OrangeBox>
+				<StationNameBig>{stationName.replace(/\s*station$/i, '')}</StationNameBig>
+			  </OrangeBox>
   
-		  <TimelineContainer ref={timelineRef}>
-			<BarContainer $usedRatio={(usedCount / totalSlots) * 100}>
-			  {Array.from({ length: totalSlots }).map((_, i) => {
-				// Position dot at the center of each segment
-				const top = (i * segmentHeight) + segmentHeight;				
-				return <Dot key={i} style={{ top: `${top}px` }} />;
-			  })}
-			</BarContainer>
+			  <TimelineContainer ref={timelineRef}>
+				<BarContainer $usedRatio={(usedCount / totalSlots) * 100}>
+				  {Array.from({ length: totalSlots }).map((_, i) => {
+					const top = (i * segmentHeight) + segmentHeight;				
+					return <Dot key={i} style={{ top: `${top}px` }} />;
+				  })}
+				</BarContainer>
   
-			<LabelsContainer $height={segmentHeight}>
-			  {items.map((item, i) => (
-				<LabelRow key={i}>
-				  {item === 'flag' ? (
-					<FlagIcon src="/Icons/Flag.svg" alt="unused guess" />
-				  ) : (
-					<span style={{ marginLeft: '16px' }}>{item}</span>
-				  )}
-				</LabelRow>
-			  ))}
-			</LabelsContainer>
-		  </TimelineContainer>
+				<LabelsContainer $height={segmentHeight}>
+				  {items.map((item, i) => (
+					<LabelRow key={i}>
+					  {item === 'flag' ? (
+						<FlagIcon src="/Icons/Flag.svg" alt="unused guess" />
+					  ) : (
+						<span style={{ marginLeft: '16px' }}>{item}</span>
+					  )}
+					</LabelRow>
+				  ))}
+				</LabelsContainer>
+			  </TimelineContainer>
   
-		  <Divider />
+			  <Divider />
   
-		  <StatsGrid>
-			<StatItem>
-			  <StatNumber>{stats.played}</StatNumber>
-			  <StatLabel>Played</StatLabel>
-			</StatItem>
-			<StatItem>
-			  <StatNumber>{winPercentage}</StatNumber>
-			  <StatLabel>Win %</StatLabel>
-			</StatItem>
-			<StatItem>
-			  <StatNumber>{stats.streak}</StatNumber>
-			  <StatLabel>Streak</StatLabel>
-			</StatItem>
-		  </StatsGrid>
-		</Drawer>
-	  </AnimatePresence>
+			  <StatsGrid>
+				<StatItem>
+				  <StatNumber>{stats.played}</StatNumber>
+				  <StatLabel>Played</StatLabel>
+				</StatItem>
+				<StatItem>
+				  <StatNumber>{winPercentage}</StatNumber>
+				  <StatLabel>Win %</StatLabel>
+				</StatItem>
+				<StatItem>
+				  <StatNumber>{stats.streak}</StatNumber>
+				  <StatLabel>Streak</StatLabel>
+				</StatItem>
+			  </StatsGrid>
+			</Drawer>
+		  )}
+		</AnimatePresence>
+		
+		{/* Reopen button - only show when drawer is closed */}
+		{!isOpen && (
+		  <ReopenButton
+			onClick={onReopen}
+			initial={{ y: 100 }}
+			animate={{ y: 0 }}
+			exit={{ y: 100 }}
+			transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+		  >
+			View Results
+		  </ReopenButton>
+		)}
+	  </>
 	);
 };
   

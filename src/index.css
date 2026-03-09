@@ -3,8 +3,20 @@
   src: url('ttf/PublicSans-Regular.ttf');
 }
 
+html {
+  background-color: #F6891F; /* Orange for the top area */
+  min-height: 100%;
+}
+
 body {
-  background-color: #ebece6;
+  background: linear-gradient(
+    to bottom,
+    #F6891F 0%,
+    #F6891F 118px,
+    white 118px,
+    white 100%
+  );
+  background-attachment: fixed;
   font-family: Public Sans NSW;
   margin: 0;
   padding: 0;

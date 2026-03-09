@@ -77,17 +77,18 @@ const AutocompleteSuggestion = styled.div`
     color: #777;
     pointer-events: none;
     z-index: 1;
-    font-family: 'Arial', sans-serif;
 `;
 
 const VisiblePart = styled.span`
     color: transparent;
     white-space: pre;
+    font-size: 24px;
 `;
 
 const SuggestionPart = styled.span`
     color: #777;
     white-space: pre;
+    font-size: 24px;
 `;
 
 const NextGuessBadge = styled.div`

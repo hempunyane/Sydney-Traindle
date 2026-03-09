@@ -25,7 +25,7 @@ const GameContainer = styled.div.attrs(() => ({}))`
   height: 100dvh;
   width: ${props => (props.$isMobile ? '100%' : '600px')};
   box-sizing: border-box;
-  padding-top: 15px;
+  padding-top: 20px;
   padding-bottom: env(safe-area-inset-bottom, 0px); /* Add safe area padding */
   position: fixed;
   background: white;

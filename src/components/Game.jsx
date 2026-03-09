@@ -22,10 +22,11 @@ const GameContainer = styled.div.attrs(() => ({}))`
   display: flex;
   flex-direction: column;
   align-items: center;
-  height: 100vh;
+  height: 100dvh;
   width: ${props => (props.$isMobile ? '100%' : '600px')};
   box-sizing: border-box;
   padding-top: 15px;
+  padding-bottom: env(safe-area-inset-bottom, 0px); /* Add safe area padding */
   position: fixed;
   background: white;
 `;
@@ -267,7 +268,7 @@ function Game() {
                         onClose={() => setShowMap(false)} 
                     />
                 )}
-                {isMobile && <div style={{ height: '450px' }} />}
+                {/*{isMobile && <div style={{ height: '450px' }} />}*/}
             </GameContainer>
         </div>
     )

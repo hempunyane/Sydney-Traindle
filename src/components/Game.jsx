@@ -12,7 +12,6 @@ import Hint from './hint';
 
 const MAX_GUESSES = 8;
 
-// import { TrainlinePopout, PieIconGenerator } from './trainlineIconDisplays';
 // import Timer from './timer';
 //import MobileContext from './mobileContext';
 
@@ -97,12 +96,14 @@ function Game() {
 
     const [answerStation, setAnswerStation] = useState(null);
     const [guesses, setGuesses] = useState([]);
+    const [guessCount, setGuessCount] = useState(0);
     const [hasWon, setHasWon] = useState(false);
     const [hasLost, setHasLost] = useState(false);
     const [showEndScreen, setShowEndScreen] = useState(false);
     const [isEndScreenOpen, setIsEndScreenOpen] = useState(true);
     const [showTutorial, setShowTutorial] = useState(false);
     const [stats, setStats] = useState(loadStats);
+    const [hintUsed, setHintUsed] = useState(false);
     const [showMap, setShowMap] = useState(false);
 
     const initialized = React.useRef(false);
@@ -127,6 +128,7 @@ function Game() {
         if (storedDate === today) {
             setAnswerStation(todaysAnswer);
             setGuesses(storedGuesses);
+            setGuessCount(storedGuesses.length);
             setHasWon(storedHasWon);
             setHasLost(storedHasLost);
         } else {
@@ -146,13 +148,13 @@ function Game() {
     // Check for win/loss conditions
     useEffect(() => {
         // Check for win
-        if (hasWon && guesses.length > 0 && guesses[0].stationName === answerStation) {
+        if (hasWon && guessCount > 0 && guesses[0].stationName === answerStation) {
             setShowEndScreen(true);
         }
         
         // Check for loss (ran out of guesses and haven't won)
-        const guessesLeft = MAX_GUESSES - guesses.length;
-        if (!hasWon && guessesLeft === 0 && guesses.length > 0) {
+        const guessesLeft = MAX_GUESSES - guessCount;
+        if (!hasWon && guessesLeft === 0 && guessCount > 0) {
             setHasLost(true);
             localStorage.setItem('lost', true);
             setShowEndScreen(true);
@@ -160,11 +162,7 @@ function Game() {
     }, [hasWon, guesses, answerStation]);
 
     const getGuessesForDisplay = () => {
-      if (hasWon) {
         return guesses.slice(1).map(g => g.stationName.replace(/\s*station$/i, ''));
-      } else {
-        return guesses.slice(1).map(g => g.stationName.replace(/\s*station$/i, ''));
-      }
     };
 
     useEffect(() => {
@@ -209,8 +207,9 @@ function Game() {
     const submitGuess = useCallback((guess) => {
         const isDuplicate = guesses.some(g => g.stationName === guess);
         if (isDuplicate) return;
-    
+
         addGuess(guess);
+        setGuessCount(prev => prev + 1);
     }, [guesses, addGuess]);
 
     const handleSeeGuesses = () => {
@@ -220,6 +219,13 @@ function Game() {
     const handleReopenEndScreen = () => {
         setIsEndScreenOpen(true); // Reopen the drawer
     };
+
+    const onHintOpen = () => {
+        if (!hintUsed){
+            setGuessCount(prev => prev + 1);
+            setHintUsed(true);
+        }
+    }
 
     if (!answerStation) {
         return <div>Loading...</div>;
@@ -242,7 +248,7 @@ function Game() {
                 <SearchBox 
                     onSubmit={submitGuess}
                     suggestions={stations}
-                    guessesLeft={MAX_GUESSES - guesses.length}
+                    guessesLeft={MAX_GUESSES - guessCount}
                     onHelp={() => setShowTutorial(true)}
                     onMap={() => setShowMap(true)}
                     disabled={hasWon || hasLost}
@@ -272,7 +278,8 @@ function Game() {
               )}
                 {showMap && (
                     <Hint 
-                        isOpen={showMap} 
+                        isOpen={showMap}
+                        onOpen={() => onHintOpen()} 
                         onClose={() => setShowMap(false)} 
                     />
                 )}

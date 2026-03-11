@@ -75,9 +75,22 @@ const TransformComponentStyled = styled(TransformComponent)`
   }
 `;
 
-const Hint = ({ isOpen, onClose }) => {
-    if (!isOpen) return null;
+const Hint = ({ isOpen, onOpen, onClose }) => {
+	const openedRef = React.useRef(false);
 
+    React.useEffect(() => {
+        if (isOpen && !openedRef.current) {
+            openedRef.current = true;
+            onOpen();
+        }
+
+        if (!isOpen) {
+            openedRef.current = false;
+        }
+    }, [isOpen, onOpen]);
+
+    if (!isOpen) return null;
+	
     return (
         <MapOverlay onClick={onClose}>
             <MapContainer onClick={(e) => e.stopPropagation()}>

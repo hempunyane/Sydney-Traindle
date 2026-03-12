@@ -280,7 +280,7 @@ function Game() {
                     <Hint 
                         isOpen={showMap}
                         onOpen={() => onHintOpen()} 
-                        onClose={() => setShowMap(false)} 
+                        onClose={() => setShowMap(false)}
                     />
                 )}
             </GameContainer>

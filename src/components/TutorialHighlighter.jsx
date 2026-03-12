@@ -49,6 +49,25 @@ const CurrentGuessTutorial = () => {
     </TutorialBox>
 }
 
+const MapButtonTutorial = () => {
+    const ArrowDisplay = styled.div`
+        display: flex;
+        justify-content: space-around;
+
+        img {
+            width: 50px;
+        }
+
+        div {
+            width: 40px;
+        }
+    `
+
+    return <TutorialBox width="300" height="90" offset={0}>
+        <p>The first time opening the map will use a guess</p>
+    </TutorialBox>
+}
+
 const CurrentGuessDistTutorial = () => {
     const ArrowDisplay = styled.div`
         display: flex;
@@ -251,6 +270,7 @@ const TutorialHighlighter = ({ currentIndex = 0, onFinish, show }) => {
         const timer = setTimeout(() => {
             const newClips = [
                 document.getElementById("input-area") ? formatClipByID("input-area") : null,
+                document.getElementById("map-button") ? formatClipByID("map-button") : null,
                 document.getElementById("current-guess") ? formatClipByID("current-guess") : null,
                 document.getElementById("current-guess-dist") ? formatClipByID("current-guess-dist") : null,
                 document.getElementById("current-guess-stops") ? formatClipByID("current-guess-stops") : null,
@@ -278,18 +298,9 @@ const TutorialHighlighter = ({ currentIndex = 0, onFinish, show }) => {
         explain expandable for trainline names
     */
 
-    const targetedIds = [
-        formatClipByID("input-area"),
-        formatClipByID("current-guess"),
-        formatClipByID("current-guess-dist"),
-        formatClipByID("current-guess-stops"),
-        formatClipByID("current-guess-trainlines"),
-        formatClipByID("history-area"),
-        formatClipByID("history-expansion")
-    ]
-
     const tutorialPopups = [
         <InputAreaTutorial/>,
+        <MapButtonTutorial/>,
         <CurrentGuessTutorial/>,
         <CurrentGuessDistTutorial/>,
         <CurrentGuessStopsTutorial/>,

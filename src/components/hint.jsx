@@ -1,4 +1,3 @@
-// hint.jsx
 import React from "react";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import styled from "styled-components";
@@ -23,7 +22,7 @@ const MapContainer = styled.div`
   background: white;
   border-radius: 10px;
   padding: 10px;
-  overflow: hidden; /* Critical: prevents content from overflowing */
+  overflow: hidden;
 `;
 
 const CloseButton = styled.button`
@@ -42,55 +41,54 @@ const CloseButton = styled.button`
   justify-content: center;
   cursor: pointer;
   z-index: 2001;
-  
+
   &:hover {
     background-color: #e07b1f;
   }
 `;
 
-const MapImage = styled.img`
+const SvgContainer = styled.div`
   width: 100%;
   height: 100%;
-  object-fit: contain;
-  display: block; /* Removes any extra spacing */
-`;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-// Wrapper to constrain the transform component
-const TransformWrapperStyled = styled(TransformWrapper)`
-  width: 100%;
-  height: 100%;
-`;
-
-const TransformComponentStyled = styled(TransformComponent)`
-  width: 100%;
-  height: 100%;
-  
-  /* The transform component creates a div, we need to constrain it */
-  div {
+  svg {
     width: 100%;
     height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    object-fit: contain;
   }
 `;
 
+let cachedSvg = null;
+
 const Hint = ({ isOpen, onOpen, onClose }) => {
-	const openedRef = React.useRef(false);
+    const openedRef = React.useRef(false);
+    const [svgContent, setSvgContent] = React.useState(cachedSvg);
+
+    React.useEffect(() => {
+        if (cachedSvg) return;
+        fetch("/Maps/map.svg")
+            .then((r) => r.text())
+            .then((text) => {
+                cachedSvg = text;
+                setSvgContent(text);
+            });
+    }, []);
 
     React.useEffect(() => {
         if (isOpen && !openedRef.current) {
             openedRef.current = true;
             onOpen();
         }
-
         if (!isOpen) {
             openedRef.current = false;
         }
     }, [isOpen, onOpen]);
 
     if (!isOpen) return null;
-	
+
     return (
         <MapOverlay onClick={onClose}>
             <MapContainer onClick={(e) => e.stopPropagation()}>
@@ -98,25 +96,16 @@ const Hint = ({ isOpen, onOpen, onClose }) => {
                     initialScale={1}
                     minScale={1}
                     maxScale={5}
-                    wheel={{ step: 0.1 }}
-                    pinch={{ step: 0.1 }}
-                    // Add these options to constrain panning
-                    limitToBounds={true} // Keeps content within bounds
-                    centerOnInit={true} // Centers the image initially
-                    minPositionX={null} // Let the library handle bounds
-                    maxPositionX={null}
-                    minPositionY={null}
-                    maxPositionY={null}
+                    wheel={{ step: 0.3 }}
+                    pinch={{ step: 0.3 }}
+                    limitToBounds={true}
+                    centerOnInit={true}
                 >
-                    <TransformComponentStyled
-                        wrapperStyle={{
-                            width: "100%",
-                            height: "100%",
-                            overflow: "hidden", // Double ensure no overflow
-                        }}
+                    <TransformComponent
+                        wrapperStyle={{ width: "100%", height: "100%", overflow: "hidden" }}
                     >
-                        <MapImage src="./Maps/map-old.png" alt="Train Network Map" />
-                    </TransformComponentStyled>
+                        <SvgContainer dangerouslySetInnerHTML={{ __html: svgContent ?? "" }} />
+                    </TransformComponent>
                 </TransformWrapper>
                 <CloseButton onClick={onClose}>
                     <i className="bi bi-x-lg"></i>

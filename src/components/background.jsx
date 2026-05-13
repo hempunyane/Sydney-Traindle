@@ -22,7 +22,8 @@ class Train extends React.Component {
             posNodes: [[0,0], [0,0], [0,0]],  //previous location node XY, current, next (relative to svg)
             bgTile: [0,0] //XY of background tile train is displayed on
         }
-    }    
+        this.setStartingPos()
+    }
     
     getRandomNode(railObject) {
         //get the nodes from the map
@@ -121,7 +122,6 @@ class Train extends React.Component {
     }
 
     render() {
-        this.setStartingPos()
         //position of tile top left on screen
         let xTilePos = this.state.bgTile[0]*(this.state.width*0.2)
         let yTilePos = this.state.bgTile[1]*(this.state.width*0.2)

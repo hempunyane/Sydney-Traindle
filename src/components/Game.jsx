@@ -71,6 +71,14 @@ const getTodaysAnswer = (stations) => {
   return stations[randomIndex];
 };
   
+const safeParseJSON = (value, fallback) => {
+  try {
+    return value ? JSON.parse(value) : fallback;
+  } catch {
+    return fallback;
+  }
+};
+
 // Load stats from localStorage
 const loadStats = () => {
   const defaultStats = {
@@ -80,8 +88,7 @@ const loadStats = () => {
     lastGameDate: '',
     lastGameResult: null
   };
-  const stored = localStorage.getItem('gameStats');
-  return stored ? JSON.parse(stored) : defaultStats;
+  return safeParseJSON(localStorage.getItem('gameStats'), defaultStats);
 };
 
 // Save stats
@@ -113,9 +120,9 @@ function Game() {
         initialized.current = true;
 
         const storedDate = localStorage.getItem('gameDate');
-        const storedGuesses = JSON.parse(localStorage.getItem('selectedStations')) || [];
-        const storedHasWon = JSON.parse(localStorage.getItem('won')) || false;
-        const storedHasLost = JSON.parse(localStorage.getItem('lost')) || false;
+        const storedGuesses = safeParseJSON(localStorage.getItem('selectedStations'), []);
+        const storedHasWon = safeParseJSON(localStorage.getItem('won'), false);
+        const storedHasLost = safeParseJSON(localStorage.getItem('lost'), false);
 
         const today = getTodayDateString();
         //const mockDate = new Date('2025-02-03');

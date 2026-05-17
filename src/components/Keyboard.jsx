@@ -177,7 +177,7 @@ function Keyboard({onKeyPress, disableEnter, isCapitalMode = false, onHelp, onMa
 
       <BottomButtonRow>
         <FooterButtonContainer onClick={handleMapClick} id="map-button">
-          <FooterButton className="cursor-hover" onClick={handleMapClick}>
+          <FooterButton className="cursor-hover">
             <FooterIcon src="./Icons/pin.svg" alt="Map" />
           </FooterButton>
           <Text1>Map</Text1>

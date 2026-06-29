@@ -82,18 +82,13 @@ const CurrentGuessDistTutorial = () => {
         }
     `
 
-    return <TutorialBox width="300" height="250" offset={-100}>
-        <p><span className="bold">Distance</span></p>
-        <p>The correct station is:</p>
+    return <TutorialBox width="300" height="230" offset={-100}>
+        <p><span className="bold">Direction</span></p>
+        <p>The arrow points from your guess toward the correct station, rounded to one of 8 compass directions.</p>
         <ArrowDisplay>
             <div></div>
-            <img src="/Icons/arrow_up.svg"/>
-            <p><span className="bold">Further away</span> from Central Station than this guess</p>
-        </ArrowDisplay>
-        <ArrowDisplay>
-            <div></div>
-            <img src="/Icons/arrow_down.svg"/>
-            <p><span className="bold">Closer to</span> Central Station than this guess</p>
+            <img src="/Icons/arrow_up.svg" style={{ transform: 'rotate(45deg)' }}/>
+            <p>e.g. <span className="bold">NE</span> means the answer is North-East of this guess</p>
         </ArrowDisplay>
     </TutorialBox>
 }
@@ -290,7 +285,7 @@ const TutorialHighlighter = ({ currentIndex = 0, onFinish, show }) => {
         using the keyboard
     2: current guess, relevant info, guess count
         current guess area
-        distance breakdown
+        direction breakdown
         stops breakdown
         trainline breakdown
     3: history and expanding history information

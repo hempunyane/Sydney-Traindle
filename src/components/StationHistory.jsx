@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import trainNetwork from "../helper/TrainNetwork";
 import { HeadingText, HistoryInfoText } from './TextStyles';
-import { BarDisplay } from './trainlineIconDisplays';
+import { BarDisplay } from './TrainlineIconDisplays';
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';

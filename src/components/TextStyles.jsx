@@ -1,4 +1,3 @@
-// TextStyles.js
 import styled from 'styled-components';
 
 // note for later: use clamp to ensure text adjusts smoothly and dynamically

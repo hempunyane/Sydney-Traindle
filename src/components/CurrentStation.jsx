@@ -9,6 +9,7 @@ const Container = styled('div')`
     padding-top: 10px;
     margin-bottom: 5px;
     border-bottom: 1px solid #777;
+    position: relative;
 `;
 
 const ColumnsRow = styled('div')`
@@ -87,6 +88,22 @@ const CurrentArrowIcon = styled.img`
     transition: transform 0.2s ease;
 `;
 
+const CorrectBadge = styled.div`
+    position: absolute;
+    bottom: 22px;
+    right: 0;
+    min-width: 74px;
+    height: 11px;
+    padding: 4px;
+    border-radius: 4px;
+    background-color: #727172;
+    color: #ffffff;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+`;
+
 const getStationRanges = (stationsAway) => {
     if (stationsAway === 0) return '0';
     const ranges = ['10-20', '20-30', '30-40', '40-50', '50-60', '60-70'];
@@ -139,7 +156,7 @@ function CurrentStation({ currentGuess, answerStation }) {
         <Container id="current-guess">
             <ColumnsRow>
                 <Column1>
-                    <HeadingText>Station</HeadingText>
+                    <HeadingText>Last Guess</HeadingText>
                     <StationText>{stationName}</StationText>
                 </Column1>
                 <Column2 id="current-guess-dist">
@@ -182,6 +199,9 @@ function CurrentStation({ currentGuess, answerStation }) {
                     )}
                 </LinesContainer>
             </LinesRow>
+            {hasGuess && !isAnswer && (
+                <CorrectBadge>To Correct Station</CorrectBadge>
+            )}
         </Container>
     );
 }

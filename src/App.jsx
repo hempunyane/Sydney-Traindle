@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Background from './components/background';
+import Background from './components/Background';
 import "bootstrap-icons/font/bootstrap-icons.css";
 import Game from './components/Game';
 

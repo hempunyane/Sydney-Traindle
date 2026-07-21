@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import Keyboard from "./Keyboard";
-import { Guess, GuessesLeft } from './guesses';
+import { GuessesLeft } from './Guesses';
 
 const AutocompleteContainer = styled.div`
     display: flex;
@@ -13,9 +13,9 @@ const AutocompleteContainer = styled.div`
 
 const Autocomplete = styled.div`
     display: flex;
-    align-items: center; /* Vertically center all items */
+    align-items: center;
     width: 90%;
-    min-height: 70px; /* Minimum height instead of fixed vh */
+    min-height: 70px;
     border-bottom: 1px solid #777;
     padding-bottom: 1vh;
     margin-bottom: 7px;
@@ -24,8 +24,8 @@ const Autocomplete = styled.div`
 
 const InputContainer = styled.div`
     position: relative;
-    flex: 2; /* Take available space */
-    min-width: 0; /* Allow shrinking */
+    flex: 2;
+    min-width: 0;
     display: flex;
     align-items: center;
     height: 100%;
@@ -55,7 +55,7 @@ const StyledInput = styled.input.attrs({
         color: #919191;
     }
 `;
-  
+
 const InputWrapper = styled.div`
     position: relative;
     width: 100%;
@@ -63,7 +63,6 @@ const InputWrapper = styled.div`
     align-items: center;
     height: 100%;
 `;
-
 
 const AutocompleteSuggestion = styled.div`
     position: absolute;
@@ -107,82 +106,54 @@ const NextGuessBadge = styled.div`
     justify-content: center;
 `;
 
-class SearchBox extends React.PureComponent {
-    constructor(props) {
-        super(props);
-        this.state = {
-            value: "",
-            filteredSuggestions: [],
-            activeSuggestionIndex: 0,
-            showSuggestions: false,
-            nextCapital: true
-        };
-    }
+function getFilteredSuggestions(userInput, suggestions) {
+    if (!userInput) return null;
 
-    componentDidMount() {
-        window.addEventListener("keydown", this.handleGlobalKeyDown);
-    }
-    
-    componentWillUnmount() {
-        window.removeEventListener("keydown", this.handleGlobalKeyDown);
-    }
+    const lcInput = userInput.toLowerCase();
+    const cleanedSuggestions = suggestions.map(s => s.replace(/\s*station$/i, ''));
+    const firstMatch = cleanedSuggestions.find(s => s.toLowerCase().startsWith(lcInput));
 
-    getFilteredSuggestions = (userInput) => {
-        if (!userInput) return null;
-        
-        const lcInput = userInput.toLowerCase();
-        const { suggestions } = this.props;
-        
-        // Remove 'station' from suggestions for matching
-        const cleanedSuggestions = suggestions.map(s => s.replace(/\s*station$/i, ''));
-        
-        // Only find matches that START WITH the input
-        const firstMatch = cleanedSuggestions.find(s => 
-            s.toLowerCase().startsWith(lcInput)
-        );
-        
-        return firstMatch || null;
-    };
+    return firstMatch || null;
+}
 
-    handleGlobalKeyDown = (e) => {
-        const key = e.key;
-        if (key.length > 1 && key !== "Enter" && key !== "Backspace") {
-            return;
-        }
+function SearchBox({ onSubmit, suggestions, guessesLeft, onHelp, onMap, isMobile }) {
+    const inputRef = useRef(null);
+    const [value, setValue] = useState("");
+    const [currentSuggestion, setCurrentSuggestion] = useState("");
+    const [showSuggestion, setShowSuggestion] = useState(false);
+    const [nextCapital, setNextCapital] = useState(true);
 
-        e.preventDefault();
-        if (this.inputRef) {
-            this.inputRef.focus();
-        }
-        
-        this.handleKeyPress(key);
-    };
+    const updateInputValue = useCallback((newValue, newCursorPos) => {
+        setValue(newValue);
+        requestAnimationFrame(() => {
+            if (!inputRef.current) return;
+            inputRef.current.focus();
+            inputRef.current.setSelectionRange(newCursorPos, newCursorPos);
+        });
+    }, []);
 
-    handleKeyPress = (key) => {
-        const input = this.inputRef;
+    const handleKeyPress = useCallback((key) => {
+        const input = inputRef.current;
         if (!input) return;
-        
-        const { value, nextCapital } = this.state;
+
         const start = input.selectionStart;
         const end = input.selectionEnd;
-        
+
         if (key === 'Enter') {
-            if (this.state.currentSuggestion) {
-                this.props.onSubmit(this.state.currentSuggestion + ' Station');
-                this.setState({
-                    value: '',
-                    currentSuggestion: "",
-                    showSuggestion: false,
-                    nextCapital: true // Reset to capital mode after submit
-                });
+            if (currentSuggestion) {
+                onSubmit(currentSuggestion + ' Station');
+                setValue('');
+                setCurrentSuggestion("");
+                setShowSuggestion(false);
+                setNextCapital(true);
             }
             return;
         }
-        
+
         let newValue = value;
         let newCursorPos = start;
         let nextCapitalState = nextCapital;
-        
+
         if (key === 'Backspace') {
             if (start === end && start > 0) {
                 newValue = value.slice(0, start - 1) + value.slice(end);
@@ -191,12 +162,10 @@ class SearchBox extends React.PureComponent {
                 newValue = value.slice(0, start) + value.slice(end);
                 newCursorPos = start;
             }
-            
-            // Recalculate capitalisation after backspace based on cursor position
+
             const prevChar = newValue[newCursorPos - 1];
             nextCapitalState = !newValue || prevChar === ' ';
         } else {
-            // character / space input
             let charToInsert = key;
             const isLetter = /^[a-zA-Z]$/.test(key);
 
@@ -210,82 +179,83 @@ class SearchBox extends React.PureComponent {
             newValue = value.slice(0, start) + charToInsert + value.slice(end);
             newCursorPos = start + charToInsert.length;
         }
-        
-        const suggestion = this.getFilteredSuggestions(newValue);
-        const showSuggestion = Boolean(suggestion && newValue);
-        
-        this.setState({
-            value: newValue,
-            currentSuggestion: suggestion || "",
-            showSuggestion,
-            nextCapital: nextCapitalState
-        });
-        
-        this.updateInputValue(newValue, newCursorPos);
-        this.inputRef?.focus();
-    };
 
-    updateInputValue = (newValue, newCursorPos) => {
-        this.setState({ value: newValue }, () => {
-            requestAnimationFrame(() => {
-                this.inputRef.focus();
-                this.inputRef.setSelectionRange(newCursorPos, newCursorPos);
-            });
-        });
-    };
+        const suggestion = getFilteredSuggestions(newValue, suggestions);
+        const shouldShowSuggestion = Boolean(suggestion && newValue);
 
-    handleInputSelect = (e) => {
+        setCurrentSuggestion(suggestion || "");
+        setShowSuggestion(shouldShowSuggestion);
+        setNextCapital(nextCapitalState);
+        updateInputValue(newValue, newCursorPos);
+        inputRef.current?.focus();
+    }, [value, nextCapital, currentSuggestion, suggestions, onSubmit, updateInputValue]);
+
+    useEffect(() => {
+        const handleGlobalKeyDown = (e) => {
+            const key = e.key;
+            if (key.length > 1 && key !== "Enter" && key !== "Backspace") {
+                return;
+            }
+
+            e.preventDefault();
+            inputRef.current?.focus();
+            handleKeyPress(key);
+        };
+
+        window.addEventListener("keydown", handleGlobalKeyDown);
+        return () => window.removeEventListener("keydown", handleGlobalKeyDown);
+    }, [handleKeyPress]);
+
+    const handleInputSelect = (e) => {
         e.preventDefault();
-        this.inputRef.focus();
+        inputRef.current?.focus();
         setTimeout(() => {
-            this.inputRef.setSelectionRange(
-                this.inputRef.selectionStart, 
-                this.inputRef.selectionEnd
+            if (!inputRef.current) return;
+            inputRef.current.setSelectionRange(
+                inputRef.current.selectionStart,
+                inputRef.current.selectionEnd
             );
         }, 0);
     };
 
-    render() {
-        const { value, currentSuggestion, showSuggestion, nextCapital } = this.state;
-        const suggestionPart = showSuggestion 
-            ? currentSuggestion.slice(value.length) 
-            : "";
-            
-        return (
-            <AutocompleteContainer id="input-area">
-                <Autocomplete>
-                    <NextGuessBadge>Next Guess</NextGuessBadge>
-                    <InputContainer>
-                        <InputWrapper>
-                            <StyledInput
-                                ref={(ref) => this.inputRef = ref}
-                                value={value}
-                                placeholder="Station Name"
-                                autoComplete="off"
-                                inputMode="none"
-                                onChange={() => {}}
-                                onTouchStart={this.handleInputSelect}
-                            />
-                            {showSuggestion && (
-                                <AutocompleteSuggestion $isMobile={this.props.isMobile}>
-                                    <VisiblePart>{value}</VisiblePart>
-                                    <SuggestionPart>{suggestionPart}</SuggestionPart>
-                                </AutocompleteSuggestion>
-                            )}
-                        </InputWrapper>
-                    </InputContainer>
-                    <GuessesLeft guessesLeft={this.props.guessesLeft} />
-                </Autocomplete>
-                <Keyboard 
-                    onKeyPress={this.handleKeyPress}
-                    disableEnter={!showSuggestion}
-                    isCapitalMode={nextCapital}
-                    onHelp={this.props.onHelp}
-                    onMap={this.props.onMap}
-                />
-            </AutocompleteContainer>
-        );
-    }
+    const suggestionPart = showSuggestion
+        ? currentSuggestion.slice(value.length)
+        : "";
+
+    return (
+        <AutocompleteContainer id="input-area">
+            <Autocomplete>
+                <NextGuessBadge>Next Guess</NextGuessBadge>
+                <InputContainer>
+                    <InputWrapper>
+                        <StyledInput
+                            ref={inputRef}
+                            value={value}
+                            placeholder="Station Name"
+                            autoComplete="off"
+                            inputMode="none"
+                            onChange={() => {}}
+                            onTouchStart={handleInputSelect}
+                        />
+                        {showSuggestion && (
+                            <AutocompleteSuggestion $isMobile={isMobile}>
+                                <VisiblePart>{value}</VisiblePart>
+                                <SuggestionPart>{suggestionPart}</SuggestionPart>
+                            </AutocompleteSuggestion>
+                        )}
+                    </InputWrapper>
+                </InputContainer>
+                <GuessesLeft guessesLeft={guessesLeft} />
+            </Autocomplete>
+            <Keyboard
+                onKeyPress={handleKeyPress}
+                disableEnter={!showSuggestion}
+                isCapitalMode={nextCapital}
+                onHelp={onHelp}
+                onMap={onMap}
+            />
+        </AutocompleteContainer>
+    );
 }
 
-export default SearchBox;
+export default React.memo(SearchBox);

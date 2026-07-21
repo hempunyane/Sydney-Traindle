@@ -1,21 +1,17 @@
 import React, { useCallback, useState, useEffect } from 'react';
 import { useMediaQuery, useTheme } from '@mui/material';
 import styled from 'styled-components';
-import SearchBox from './searchBox';
+import SearchBox from './SearchBox';
 import trainNetwork from "../helper/TrainNetwork";
-import { Guess, GuessesLeft } from './guesses';
 import TutorialHighlighter from './TutorialHighlighter';
 import CurrentStation from './CurrentStation';
 import StationHistory from './StationHistory';
 import EndScreen from './EndScreen';
-import Hint from './hint';
+import Hint from './Hint';
 import TutorialPrompt from './TutorialPrompt';
+import { createGuess } from './Guesses';
 
 const MAX_GUESSES = 8;
-
-// import Timer from './timer';
-//import MobileContext from './mobileContext';
-
 
 // TODO: figure out how mobile top inset works
 const GameContainer = styled.div.attrs(() => ({}))`
@@ -132,7 +128,7 @@ function Game() {
         const todaysAnswer = getTodaysAnswer(stations);
         
         const hideTutorialPrompt = safeParseJSON(localStorage.getItem('hideTutorialPrompt'), false);
-        setShowTutorialPrompt(!hideTutorialPrompt);
+
         // need ot not store answer in local
         if (storedDate === today) {
             setAnswerStation(todaysAnswer);
@@ -140,11 +136,13 @@ function Game() {
             setGuessCount(storedGuesses.length);
             setHasWon(storedHasWon);
             setHasLost(storedHasLost);
+            setShowTutorialPrompt(!hideTutorialPrompt && !storedHasWon && !storedHasLost);
         } else {
             setAnswerStation(todaysAnswer);
             setHasWon(false);
             setHasLost(false);
             setGuesses([]);
+            setShowTutorialPrompt(!hideTutorialPrompt);
   
             localStorage.setItem('gameDate', today);
             localStorage.setItem('selectedStations', JSON.stringify([]));
@@ -197,20 +195,19 @@ function Game() {
     }, [showEndScreen, hasWon]);
 
     const addGuess = useCallback((stationGuess) => { 
-        if (hasWon || hasLost) return;
-
-        const newGuesses = [
-            new Guess(stationGuess, answerStation),
-            ...guesses,
-        ];
-        setGuesses(newGuesses);
-        localStorage.setItem('selectedStations', JSON.stringify(newGuesses));
-
-        // Check if won
-        if (stationGuess === answerStation) {
-            setHasWon(true);
-            localStorage.setItem('won', true);
-        }
+      if (hasWon || hasLost) return;
+  
+      const newGuesses = [
+          createGuess(stationGuess, answerStation),
+          ...guesses,
+      ];
+      setGuesses(newGuesses);
+      localStorage.setItem('selectedStations', JSON.stringify(newGuesses));
+  
+      if (stationGuess === answerStation) {
+          setHasWon(true);
+          localStorage.setItem('won', true);
+      }
     }, [guesses, answerStation, hasWon, hasLost]);
 
     const submitGuess = useCallback((guess) => {

@@ -104,13 +104,7 @@ const MetricItem = styled('div')`
     font-size: 15px;
 `;
 
-const DistanceText = styled(MetricItem)`
-    &::after {
-        content: 'km';
-        margin-top: auto;
-        margin-left: 2px;
-    }
-`;
+const DirectionText = styled(MetricItem)``;
 
 const ArrowIcon = styled.img`
     width: 18px;
@@ -118,6 +112,7 @@ const ArrowIcon = styled.img`
     margin: 0;
     margin-left: 24px;
     justify-self: center;
+    transition: transform 0.2s ease;
 `;
 
 const LineIcon = styled.img`
@@ -179,10 +174,6 @@ const getStationRanges = (stationsAway) => {
     return ranges[distRange-1];
 }
 
-function formatDistance(distance) {
-    return parseFloat(distance).toFixed(2);
-}
-
 function StationHistory({ guesses, answerStation }) {
     const [expandedIndex, setExpandedIndex] = useState(null);
 
@@ -199,10 +190,11 @@ function StationHistory({ guesses, answerStation }) {
     // Create a placeholder guess if there are no guesses
     const displayGuesses = guesses.length > 0 ? guesses : [{
         stationName: 'No Lines!',
-        distanceFromCentral: 0,
+        direction: null,
+        directionLabel: '',
+        directionName: '',
         stationsAway: 0,
         lines: [],
-        distanceIcon: '/Icons/arrow_up.svg',
         isPlaceholder: true
     }];
 
@@ -243,15 +235,20 @@ function StationHistory({ guesses, answerStation }) {
                                 {station.stationName.replace(/\s*station$/i, '')}
                             </HistoryInfoText>
                             <MetricsContainer>
-                                <DistanceText>
+                                <DirectionText>
                                     <HistoryInfoText style={{ width: '100%', textAlign: 'right' }}>
-                                        {isPlaceholder ? '-.--' : formatDistance(station.distanceFromCentral)}
+                                        {isPlaceholder || station.direction === null ? '--' : ''}
                                     </HistoryInfoText>
-                                </DistanceText>
-                                <ArrowIcon 
-                                    src={station.distanceIcon} 
-                                    alt="Distance indicator" 
-                                />
+                                </DirectionText>
+                                {!isPlaceholder && station.direction !== null ? (
+                                    <ArrowIcon
+                                        src="/Icons/arrow_up.svg"
+                                        alt={`Answer is to the ${station.directionName}`}
+                                        style={{ transform: `rotate(${station.direction * 45}deg)` }}
+                                    />
+                                ) : (
+                                    <span />
+                                )}
                                 <MetricItem>
                                     <HistoryInfoText style={{ width: '100%', textAlign: 'right' }}>
                                         {isPlaceholder ? '--/--' : getStationRanges(station.stationsAway)}

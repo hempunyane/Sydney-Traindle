@@ -1,6 +1,7 @@
 import React from "react";
 import MobileContext from "./mobileContext";
 import trainNetwork from "../helper/TrainNetwork";
+import { getDirectionIndex, DIRECTION_LABELS, DIRECTION_NAMES } from "../helper/direction";
 import styled from "styled-components";
 
 export class Guess{
@@ -35,21 +36,6 @@ export class Guess{
         return -1;
     }
     
-    getDistanceFromCentral(stationGuess){
-        return trainNetwork[stationGuess]['dist']
-    }
-
-    //returns the path to a different arrow icon if guess is closer of further away from answer
-    getDistanceIcon(stationGuess, answerStation){
-        if (trainNetwork[stationGuess]['dist'] > trainNetwork[answerStation]['dist']){
-            return './Icons/arrow_down.svg'
-        }
-        if (trainNetwork[stationGuess]['dist'] < trainNetwork[answerStation]['dist']){
-            return './Icons/arrow_up.svg'
-        }
-        return './Icons/equal.svg'
-    }
-
     getLines(stationGuess){
         return trainNetwork[stationGuess]["lines"]
     }
@@ -59,8 +45,11 @@ export class Guess{
         this.lines = this.getLines(stationGuess)
         this.lineIcon = this.getIcons(stationGuess, answerStation)
         this.stationsAway = this.getStationsAway(stationGuess, answerStation)
-        this.distanceFromCentral = this.getDistanceFromCentral(stationGuess)
-        this.distanceIcon = this.getDistanceIcon(stationGuess, answerStation)
+        // Compass direction (0-7, 0 = N clockwise) from this guess toward the answer.
+        // null when the guess IS the answer.
+        this.direction = getDirectionIndex(stationGuess, answerStation)
+        this.directionLabel = this.direction === null ? '' : DIRECTION_LABELS[this.direction]
+        this.directionName = this.direction === null ? '' : DIRECTION_NAMES[this.direction]
     }
 }
 

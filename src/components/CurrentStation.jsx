@@ -73,7 +73,7 @@ const LinesContainer = styled('div')`
     background-color: ${({ background }) => background || 'transparent'};
 `;
 
-const DistanceRow = styled('div')`
+const DirectionRow = styled('div')`
     display: flex;
     align-items: center;
     justify-content: center;
@@ -83,6 +83,7 @@ const DistanceRow = styled('div')`
 const CurrentArrowIcon = styled.img`
     width: 25px;
     height: 25px;
+    transition: transform 0.2s ease;
 `;
 
 const getStationRanges = (stationsAway) => {
@@ -92,10 +93,6 @@ const getStationRanges = (stationsAway) => {
     if (distRange === 0) return stationsAway.toString();
     return ranges[distRange - 1] || `${stationsAway}`;
 };
-
-function formatDistance(distance) {
-    return parseFloat(distance).toFixed(2);
-}
 
 const getLinesBackgroundColour = (answerStation, lines) => {
     if (!answerStation || !lines || !lines.length) {
@@ -132,7 +129,7 @@ function CurrentStation({ currentGuess, answerStation }) {
     const hasGuess = Boolean(currentGuess);
 
     const stationName = hasGuess ? currentGuess.stationName.replace(/\s*station$/i, '') : 'Type to Guess!';
-    const distance = hasGuess ? `${formatDistance(currentGuess.distanceFromCentral)}km` : '-.--km';
+    const isAnswer = hasGuess && currentGuess.direction === null;
     const stops = hasGuess ? getStationRanges(currentGuess.stationsAway) : '--/--';
     const lines = hasGuess ? currentGuess.lines : [];
     const linesBackground = hasGuess ? getLinesBackgroundColour(answerStation, lines) : '#FF8888';
@@ -145,17 +142,23 @@ function CurrentStation({ currentGuess, answerStation }) {
                     <StationText>{stationName}</StationText>
                 </Column1>
                 <Column2 id="current-guess-dist">
-                    <HeadingText>Dist. from Central</HeadingText>
-                    {hasGuess ? (
-                        <DistanceRow>
-                            <InfoText>{distance}</InfoText>
-                            <CurrentArrowIcon src={currentGuess.distanceIcon} alt="Distance indicator" />
-                        </DistanceRow>
+                    <HeadingText>Direction</HeadingText>
+                    {!hasGuess ? (
+                        <DirectionRow>
+                            <InfoText>-</InfoText>
+                        </DirectionRow>
+                    ) : isAnswer ? (
+                        <DirectionRow>
+                            <InfoText>Here!</InfoText>
+                        </DirectionRow>
                     ) : (
-                        <DistanceRow>
-                            <InfoText>{distance}</InfoText>
-                            <CurrentArrowIcon src="/Icons/arrow_up.svg" alt="Distance indicator" />
-                        </DistanceRow>
+                        <DirectionRow>
+                            <CurrentArrowIcon
+                                src="/Icons/arrow_up.svg"
+                                alt={`Answer is to the ${currentGuess.directionName}`}
+                                style={{ transform: `rotate(${currentGuess.direction * 45}deg)` }}
+                            />
+                        </DirectionRow>
                     )}
                 </Column2>
                 <Column3 id="current-guess-stops">

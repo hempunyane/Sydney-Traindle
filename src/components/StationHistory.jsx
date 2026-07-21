@@ -92,27 +92,28 @@ const ExpandedLinesContainer = styled('div')`
 `;
 
 const MetricsContainer = styled('div')`
-    display: grid;
-    grid-template-columns: 60px 10px 60px;
-    align-items: center;
-    justify-items: end;
-`;
-
-const MetricItem = styled('div')`
     display: flex;
-    justify-content: flex-end;
-    font-size: 15px;
+    align-items: center;
+    gap: 20px; /* clean, explicit gap between direction and stops */
 `;
 
-const DirectionText = styled(MetricItem)``;
+const DirectionSlot = styled('div')`
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.25rem; /* room for the arrow icon or '--' text */
+`;
 
 const ArrowIcon = styled.img`
     width: 18px;
     height: 18px;
-    margin: 0;
-    margin-left: 24px;
-    justify-self: center;
     transition: transform 0.2s ease;
+`;
+
+const StopsSlot = styled('div')`
+    min-width: 5ch; /* fits "60-70", the longest possible value */
+    flex-shrink: 0;
+    text-align: right;
 `;
 
 const LineIcon = styled.img`
@@ -161,18 +162,11 @@ const getLinesBackgroundColour = (answerStation, lines) => {
 
 const getStationRanges = (stationsAway) => {
     if (stationsAway === 0) return '0';
-    let ranges = [
-      "10-20",
-      "20-30",
-      "30-40",
-      "40-50",
-      "50-60",
-      "60-70"
-    ]
-    let distRange = Math.floor(stationsAway/10);
-    if (distRange == 0) return stationsAway.toString().padStart(4, ' ');
-    return ranges[distRange-1];
-}
+    const ranges = ['10-20', '20-30', '30-40', '40-50', '50-60', '60-70'];
+    const distRange = Math.floor(stationsAway / 10);
+    if (distRange === 0) return stationsAway.toString();
+    return ranges[distRange - 1];
+};
 
 function StationHistory({ guesses, answerStation }) {
     const [expandedIndex, setExpandedIndex] = useState(null);
@@ -235,25 +229,22 @@ function StationHistory({ guesses, answerStation }) {
                                 {station.stationName.replace(/\s*station$/i, '')}
                             </HistoryInfoText>
                             <MetricsContainer>
-                                <DirectionText>
-                                    <HistoryInfoText style={{ width: '100%', textAlign: 'right' }}>
-                                        {isPlaceholder || station.direction === null ? '--' : ''}
-                                    </HistoryInfoText>
-                                </DirectionText>
-                                {!isPlaceholder && station.direction !== null ? (
-                                    <ArrowIcon
-                                        src="/Icons/arrow_up.svg"
-                                        alt={`Answer is to the ${station.directionName}`}
-                                        style={{ transform: `rotate(${station.direction * 45}deg)` }}
-                                    />
-                                ) : (
-                                    <span />
-                                )}
-                                <MetricItem>
-                                    <HistoryInfoText style={{ width: '100%', textAlign: 'right' }}>
+                                <DirectionSlot>
+                                    {!isPlaceholder && station.direction !== null ? (
+                                        <ArrowIcon
+                                            src="/Icons/arrow_up.svg"
+                                            alt={`${station.directionName}`}
+                                            style={{ transform: `rotate(${station.direction * 45}deg)` }}
+                                        />
+                                    ) : (
+                                        <HistoryInfoText>--</HistoryInfoText>
+                                    )}
+                                </DirectionSlot>
+                                <StopsSlot>
+                                    <HistoryInfoText>
                                         {isPlaceholder ? '--/--' : getStationRanges(station.stationsAway)}
                                     </HistoryInfoText>
-                                </MetricItem>
+                                </StopsSlot>
                             </MetricsContainer>
                         </FlexWrapper>
                         {(!isPlaceholder && expandedIndex !== index) && (

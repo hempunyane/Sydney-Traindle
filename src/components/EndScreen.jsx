@@ -26,6 +26,13 @@ const Drawer = styled(motion.div)`
   bottom: env(safe-area-inset-bottom, 0px);
 `;
 
+const Backdrop = styled(motion.div)`
+  position: fixed;
+  inset: 0;
+  z-index: 998; /* just below Drawer's z-index: 1000 */
+  background: transparent;
+`;
+
 const ReopenButton = styled(motion.button)`
   position: fixed;
   bottom: calc(env(safe-area-inset-bottom, 0px) + 10px);
@@ -111,6 +118,23 @@ const StationNameBig = styled.span`
   font-size: 32px;
   font-weight: bold;
   text-align: center;
+  white-space: nowrap;
+  opacity: ${({ $visible }) => ($visible === false ? 0 : 1)};
+  transition: opacity 0.2s ease 0.25s;
+`;
+
+const GuessLabel = styled.span`
+  color: #333;
+  font-size: 32px;
+  font-weight: bold;
+  text-align: center;
+  white-space: nowrap;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: ${({ $visible }) => ($visible ? 1 : 0)};
+  transition: opacity 0.2s ease;
 `;
 
 const TimelineContainer = styled.div`
@@ -132,6 +156,46 @@ const BarContainer = styled.div`
     #F6891F ${$usedRatio}%, 
     #CCCCCC ${$usedRatio}%, 
     #CCCCCC 100%)`};
+  border-radius: 5px;
+  margin-top: 0px;
+  margin-left: 20px;
+`;
+
+const AnswerBoxContainer = styled(motion.div)`
+  position: relative;
+  width: 100%;
+  height: 80px;
+  border-radius: 8px;
+  cursor: pointer;
+  overflow: hidden;
+  background: transparent;
+  border-left: 2px dashed #999;
+  border-right: 2px dashed #999;
+  border-bottom: 2px dashed #999;
+  border-top: none;
+  transition: border-color 0.3s ease;
+  ${({ $revealed }) => $revealed && `border-color: transparent;`}
+`;
+
+const OrangeSliver = styled(motion.div)`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  background-color: #F6891F;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+`;
+
+const LossBarContainer = styled.div`
+  position: relative;
+  width: 8px;
+  height: 100%;
+  background: transparent;
+  border-left: 2px dashed #999;
+  border-right: 2px dashed #999;
   border-radius: 5px;
   margin-top: 0px;
   margin-left: 20px;
@@ -207,6 +271,7 @@ const StatLabel = styled.div`
 
 const EndScreen = ({ 
 	stationName, 
+  lastGuessName,
 	guesses,           // array of guess objects with name and stationsAway
 	maxGuesses,        // MAX_GUESSES from Game
 	isWin, 
@@ -221,6 +286,12 @@ const EndScreen = ({
 	// Create ref for TimelineContainer to get its height
 	const [timelineHeight, setTimelineHeight] = useState(450);
 	const timelineRef = React.useRef(null);
+
+  const [revealed, setRevealed] = useState(isWin);
+
+  const handleReveal = () => {
+    setRevealed(!revealed);
+  };
   
 	// Update timeline height on resize
 	useEffect(() => {
@@ -276,6 +347,13 @@ const EndScreen = ({
 	  <>
 		<AnimatePresence>
 		  {isOpen && (
+        <>
+        <Backdrop
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          onClick={onSeeGuesses}
+        />
 			<Drawer
 			  initial={{ y: '100%', x: '-50%' }}
 			  animate={{ y: 0, x: '-50%' }}
@@ -291,17 +369,46 @@ const EndScreen = ({
 				</ShareIconButton>
 			  </TopBar>
   
-			  <OrangeBox>
-				<StationNameBig>{stationName.replace(/\s*station$/i, '')}</StationNameBig>
-			  </OrangeBox>
+			  {isWin ? (
+          <OrangeBox>
+            <StationNameBig>{stationName.replace(/\s*station$/i, '')}</StationNameBig>
+          </OrangeBox>
+        ) : (
+          <AnswerBoxContainer $revealed={revealed} onClick={handleReveal}>
+            <OrangeSliver
+              initial={false}
+              animate={{
+                height: revealed ? '100%' : 10,
+                borderRadius: revealed ? '8px' : '8px 8px 0 0'
+              }}
+              transition={{ type: 'spring', damping: 22, stiffness: 220 }}
+            >
+              <StationNameBig $visible={revealed}>
+                {stationName.replace(/\s*station$/i, '')}
+              </StationNameBig>
+            </OrangeSliver>
+            <GuessLabel $visible={!revealed}>
+              {lastGuessName}
+            </GuessLabel>
+          </AnswerBoxContainer>
+        )}
   
 			  <TimelineContainer ref={timelineRef}>
-				<BarContainer $usedRatio={(usedCount / totalSlots) * 100}>
-				  {Array.from({ length: totalSlots }).map((_, i) => {
-					const top = (i * segmentHeight) + segmentHeight;				
-					return <Dot key={i} style={{ top: `${top}px` }} />;
-				  })}
-				</BarContainer>
+				{isWin ? (
+          <BarContainer $usedRatio={(usedCount / totalSlots) * 100}>
+            {Array.from({ length: totalSlots }).map((_, i) => {
+              const top = (i * segmentHeight) + segmentHeight;
+              return <Dot key={i} style={{ top: `${top}px` }} />;
+            })}
+          </BarContainer>
+        ) : (
+          <LossBarContainer>
+            {Array.from({ length: totalSlots }).map((_, i) => {
+              const top = (i * segmentHeight) + segmentHeight;
+              return <Dot key={i} style={{ top: `${top}px` }} />;
+            })}
+          </LossBarContainer>
+        )}
   
 				<LabelsContainer $height={segmentHeight}>
 				  {items.map((item, i) => (
@@ -333,6 +440,7 @@ const EndScreen = ({
 				</StatItem>
 			  </StatsGrid>
 			</Drawer>
+        </>
 		  )}
 		</AnimatePresence>
 		

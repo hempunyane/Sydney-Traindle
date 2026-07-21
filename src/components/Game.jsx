@@ -9,6 +9,7 @@ import CurrentStation from './CurrentStation';
 import StationHistory from './StationHistory';
 import EndScreen from './EndScreen';
 import Hint from './hint';
+import TutorialPrompt from './TutorialPrompt';
 
 const MAX_GUESSES = 8;
 
@@ -112,6 +113,7 @@ function Game() {
     const [stats, setStats] = useState(loadStats);
     const [hintUsed, setHintUsed] = useState(false);
     const [showMap, setShowMap] = useState(false);
+    const [showTutorialPrompt, setShowTutorialPrompt] = useState(false);
 
     const initialized = React.useRef(false);
   
@@ -129,8 +131,8 @@ function Game() {
         //const today = mockDate.toISOString().split('T')[0];
         const todaysAnswer = getTodaysAnswer(stations);
         
-        const isFirstVisit = storedDate === null;
-        setShowTutorial(isFirstVisit);
+        const hideTutorialPrompt = safeParseJSON(localStorage.getItem('hideTutorialPrompt'), false);
+        setShowTutorialPrompt(!hideTutorialPrompt);
         // need ot not store answer in local
         if (storedDate === today) {
             setAnswerStation(todaysAnswer);
@@ -234,6 +236,16 @@ function Game() {
         }
     }
 
+    const handleTutorialPromptResponse = (wantsTutorial, dontShowAgain) => {
+      if (dontShowAgain) {
+          localStorage.setItem('hideTutorialPrompt', true);
+      }
+      setShowTutorialPrompt(false);
+      if (wantsTutorial) {
+          setShowTutorial(true);
+      }
+    };
+
     if (!answerStation) {
         return <div>Loading...</div>;
     }
@@ -261,15 +273,22 @@ function Game() {
                     disabled={hasWon || hasLost}
                     isMobile={isMobile}
                 />
+                {showTutorialPrompt && (
+                    <TutorialPrompt
+                        onYes={(dontShowAgain) => handleTutorialPromptResponse(true, dontShowAgain)}
+                        onNo={(dontShowAgain) => handleTutorialPromptResponse(false, dontShowAgain)}
+                    />
+                )}
                 {showTutorial && (
-                    <TutorialHighlighter 
-                        onFinish={() => setShowTutorial(false)} 
-                        show={showTutorial} 
+                    <TutorialHighlighter
+                        onFinish={() => setShowTutorial(false)}
+                        show={showTutorial}
                     />
                 )}
                 {showEndScreen && (
                   <EndScreen
                       stationName={answerStation}
+                      lastGuessName={guesses[0]?.stationName?.replace(/\s*station$/i, '')}
                       guesses={getGuessesForDisplay()}
                       maxGuesses={MAX_GUESSES}
                       isWin={hasWon}
@@ -290,6 +309,8 @@ function Game() {
                         onClose={() => setShowMap(false)}
                     />
                 )}
+
+                
             </GameContainer>
         </div>
     )

@@ -14,21 +14,21 @@ const Container = styled('div')`
 const ColumnsRow = styled('div')`
     display: flex;
     width: 100%;
+    gap: clamp(0.75rem, 3vw, 1.5rem); /* responsive gap between columns */
 `;
 
 const Column1 = styled('div')`
     flex-direction: column;
     display: flex;
     justify-content: space-between;
-    flex-grow: 5;
+    flex-grow: 8;
 `;
 
 const Column2 = styled('div')`
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    align-items: center;
-    flex-grow: 3;
+    align-items: flex-end;
 `;
 
 const Column3 = styled('div')`
@@ -36,7 +36,8 @@ const Column3 = styled('div')`
     flex-direction: column;
     justify-content: space-between;
     align-items: flex-end;
-    flex-grow: 2;
+    min-width: 6ch;   /* fits "60-70", the longest possible value */
+    flex-shrink: 0;   /* never let it get squeezed */
 `;
 
 const LinesRow = styled('div')`
@@ -149,13 +150,13 @@ function CurrentStation({ currentGuess, answerStation }) {
                         </DirectionRow>
                     ) : isAnswer ? (
                         <DirectionRow>
-                            <InfoText>Here!</InfoText>
+                            <InfoText>-</InfoText>
                         </DirectionRow>
                     ) : (
                         <DirectionRow>
                             <CurrentArrowIcon
                                 src="/Icons/arrow_up.svg"
-                                alt={`Answer is to the ${currentGuess.directionName}`}
+                                alt={`${currentGuess.directionName}`}
                                 style={{ transform: `rotate(${currentGuess.direction * 45}deg)` }}
                             />
                         </DirectionRow>

@@ -211,12 +211,13 @@ function Game() {
     }, [guesses, answerStation, hasWon, hasLost]);
 
     const submitGuess = useCallback((guess) => {
-        const isDuplicate = guesses.some(g => g.stationName === guess);
-        if (isDuplicate) return;
-
-        addGuess(guess);
-        setGuessCount(prev => prev + 1);
-    }, [guesses, addGuess]);
+      if (hasWon || hasLost) return;
+      const isDuplicate = guesses.some(g => g.stationName === guess);
+      if (isDuplicate) return;
+  
+      addGuess(guess);
+      setGuessCount(prev => prev + 1);
+    }, [guesses, addGuess, hasWon, hasLost]);
 
     const handleSeeGuesses = () => {
       setIsEndScreenOpen(false); // Close the drawer

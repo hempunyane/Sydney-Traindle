@@ -60,7 +60,7 @@ const CurrentLineIcon = styled.img`
     vertical-align: middle;
     width: 39px;
     height: 39px;
-    margin: 5px 2px 4px 4px;
+    margin: 5px 3px 4px 3px;
 `;
 
 const QuestionMarkIcon = styled.div`

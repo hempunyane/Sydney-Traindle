@@ -96,7 +96,8 @@ const NextGuessBadge = styled.div`
     top: 12px;
     left: 0;
     min-width: 74px;
-    height: 19px;
+    height: 10px;
+    padding:  5px 0px 4px 0px;
     border-radius: 4px;
     background-color: #727172;
     color: #ffffff;

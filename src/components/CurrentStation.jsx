@@ -42,11 +42,10 @@ const Column3 = styled('div')`
 `;
 
 const LinesWrapper = styled('div')`
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
+    display: block;
     margin-top: 8px;
     margin-bottom: 8px;
+    overflow: auto;
 `;
 
 const LinesTopRow = styled('div')`
@@ -57,14 +56,19 @@ const LinesTopRow = styled('div')`
 `;
 
 const CurrentLineIcon = styled.img`
+    display: inline-block;
+    vertical-align: middle;
     width: 39px;
     height: 39px;
+    margin: 5px 5px 4px 1px;
 `;
 
 const QuestionMarkIcon = styled.div`
+    display: inline-flex;
+    vertical-align: middle;
     width: 39px;
     height: 39px;
-    display: flex;
+    margin: 4px;
     align-items: center;
     justify-content: center;
     background-color: #FFFFFF;
@@ -75,12 +79,12 @@ const QuestionMarkIcon = styled.div`
 `;
 
 const LinesContainer = styled('div')`
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 4.5px 4.5px;
+    display: inline;
+    padding: 13px 0px 16px 4px;
     border-radius: 7px;
     background-color: ${({ background }) => background || 'transparent'};
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
 `;
 
 const DirectionRow = styled('div')`
@@ -97,13 +101,16 @@ const CurrentArrowIcon = styled.img`
 `;
 
 const CorrectBadge = styled.div`
+    float: right;
     min-width: 74px;
+    margin-top: 15px;
     height: 10px;
     padding:  5px 4px 4px 4px;
     border-radius: 4px;
     background-color: #727172;
     color: #ffffff;
     font-size: 12px;
+    line-height: 1;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -157,10 +164,6 @@ function CurrentStation({ currentGuess, answerStation }) {
     const lines = hasGuess ? currentGuess.lines : [];
     const linesBackground = hasGuess ? getLinesBackgroundColour(answerStation, lines) : '#FF8888';
 
-    const MAX_ICONS_PER_ROW = 5;
-    const firstRowLines = lines.slice(0, MAX_ICONS_PER_ROW);
-    const secondRowLines = lines.slice(MAX_ICONS_PER_ROW);
-
     return (
         <Container id="current-guess">
             <ColumnsRow>
@@ -194,27 +197,18 @@ function CurrentStation({ currentGuess, answerStation }) {
                 </Column3>
             </ColumnsRow>
             <LinesWrapper>
-                <LinesTopRow>
-                    <LinesContainer id="current-guess-trainlines" background={linesBackground}>
-                        {hasGuess ? (
-                            firstRowLines.map((line) => (
-                                <CurrentLineIcon key={line} src={`/Trainlines/${line}.svg`} alt={line} />
-                            ))
-                        ) : (
-                            <QuestionMarkIcon>?</QuestionMarkIcon>
-                        )}
-                    </LinesContainer>
-                    {hasGuess && !isAnswer && (
-                        <CorrectBadge>To Correct Station</CorrectBadge>
-                    )}
-                </LinesTopRow>
-                {hasGuess && secondRowLines.length > 0 && (
-                    <LinesContainer background={linesBackground}>
-                        {secondRowLines.map((line) => (
-                            <CurrentLineIcon key={line} src={`/Trainlines/${line}.svg`} alt={line} />
-                        ))}
-                    </LinesContainer>
+                {hasGuess && !isAnswer && (
+                    <CorrectBadge>To Correct Station</CorrectBadge>
                 )}
+                <LinesContainer id="current-guess-trainlines" background={linesBackground}>
+                    {hasGuess ? (
+                        lines.map((line) => (
+                            <CurrentLineIcon key={line} src={`/Trainlines/${line}.svg`} alt={line} />
+                        ))
+                    ) : (
+                        <QuestionMarkIcon>?</QuestionMarkIcon>
+                    )}
+                </LinesContainer>
             </LinesWrapper>
         </Container>
     );

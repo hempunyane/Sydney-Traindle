@@ -107,7 +107,6 @@ function Game() {
     const [isEndScreenOpen, setIsEndScreenOpen] = useState(true);
     const [showTutorial, setShowTutorial] = useState(false);
     const [stats, setStats] = useState(loadStats);
-    const [hintUsed, setHintUsed] = useState(false);
     const [showMap, setShowMap] = useState(false);
     const [showTutorialPrompt, setShowTutorialPrompt] = useState(false);
 
@@ -227,13 +226,6 @@ function Game() {
         setIsEndScreenOpen(true); // Reopen the drawer
     };
 
-    const onHintOpen = () => {
-        if (!hintUsed){
-            setGuessCount(prev => prev + 1);
-            setHintUsed(true);
-        }
-    }
-
     const handleTutorialPromptResponse = (wantsTutorial, dontShowAgain) => {
       if (dontShowAgain) {
           localStorage.setItem('hideTutorialPrompt', true);
@@ -303,7 +295,6 @@ function Game() {
                 {showMap && (
                     <Hint 
                         isOpen={showMap}
-                        onOpen={() => onHintOpen()} 
                         onClose={() => setShowMap(false)}
                     />
                 )}

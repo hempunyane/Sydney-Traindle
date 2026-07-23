@@ -64,7 +64,7 @@ const MapButtonTutorial = () => {
     `
 
     return <TutorialBox width="300" height="90" offset={0}>
-        <p>The first time opening the map will use a guess</p>
+        <p>Open the map to see the full Sydney Trains network</p>
     </TutorialBox>
 }
 

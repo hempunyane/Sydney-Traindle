@@ -63,8 +63,7 @@ const SvgContainer = styled.div`
 
 let cachedSvg = null;
 
-const Hint = ({ isOpen, onOpen, onClose }) => {
-    const openedRef = React.useRef(false);
+const Hint = ({ isOpen, onClose }) => {
     const [svgContent, setSvgContent] = React.useState(cachedSvg);
 
     React.useEffect(() => {
@@ -76,16 +75,6 @@ const Hint = ({ isOpen, onOpen, onClose }) => {
                 setSvgContent(text);
             });
     }, []);
-
-    React.useEffect(() => {
-        if (isOpen && !openedRef.current) {
-            openedRef.current = true;
-            onOpen();
-        }
-        if (!isOpen) {
-            openedRef.current = false;
-        }
-    }, [isOpen, onOpen]);
 
     if (!isOpen) return null;
 

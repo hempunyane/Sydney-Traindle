@@ -60,7 +60,7 @@ const CurrentLineIcon = styled.img`
     vertical-align: middle;
     width: 39px;
     height: 39px;
-    margin: 5px 5px 4px 1px;
+    margin: 5px 2px 4px 4px;
 `;
 
 const QuestionMarkIcon = styled.div`
@@ -80,7 +80,7 @@ const QuestionMarkIcon = styled.div`
 
 const LinesContainer = styled('div')`
     display: inline;
-    padding: 13px 0px 16px 4px;
+    padding: 13px 1px 16px 1px;
     border-radius: 7px;
     background-color: ${({ background }) => background || 'transparent'};
     box-decoration-break: clone;

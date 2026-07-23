@@ -41,11 +41,19 @@ const Column3 = styled('div')`
     flex-shrink: 0;   /* never let it get squeezed */
 `;
 
-const LinesRow = styled('div')`
+const LinesWrapper = styled('div')`
     display: flex;
-    justify-content: flex-start;
+    flex-direction: column;
+    align-items: flex-start;
     margin-top: 8px;
     margin-bottom: 8px;
+`;
+
+const LinesTopRow = styled('div')`
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
 `;
 
 const CurrentLineIcon = styled.img`
@@ -71,7 +79,7 @@ const LinesContainer = styled('div')`
     align-items: center;
     gap: 8px;
     padding: 4.5px 4.5px;
-    border-radius: 10px;
+    border-radius: 7px;
     background-color: ${({ background }) => background || 'transparent'};
 `;
 
@@ -89,12 +97,9 @@ const CurrentArrowIcon = styled.img`
 `;
 
 const CorrectBadge = styled.div`
-    position: absolute;
-    bottom: 22px;
-    right: 0;
     min-width: 74px;
-    height: 11px;
-    padding: 4px;
+    height: 10px;
+    padding:  5px 4px 4px 4px;
     border-radius: 4px;
     background-color: #727172;
     color: #ffffff;
@@ -152,6 +157,10 @@ function CurrentStation({ currentGuess, answerStation }) {
     const lines = hasGuess ? currentGuess.lines : [];
     const linesBackground = hasGuess ? getLinesBackgroundColour(answerStation, lines) : '#FF8888';
 
+    const MAX_ICONS_PER_ROW = 5;
+    const firstRowLines = lines.slice(0, MAX_ICONS_PER_ROW);
+    const secondRowLines = lines.slice(MAX_ICONS_PER_ROW);
+
     return (
         <Container id="current-guess">
             <ColumnsRow>
@@ -184,24 +193,29 @@ function CurrentStation({ currentGuess, answerStation }) {
                     <InfoText>{stops}</InfoText>
                 </Column3>
             </ColumnsRow>
-            <LinesRow>
-                <LinesContainer id="current-guess-trainlines" background={linesBackground}>
-                    {hasGuess ? (
-                        lines.map((line) => (
-                            <CurrentLineIcon
-                                key={line}
-                                src={`/Trainlines/${line}.svg`}
-                                alt={line}
-                            />
-                        ))
-                    ) : (
-                        <QuestionMarkIcon>?</QuestionMarkIcon>
+            <LinesWrapper>
+                <LinesTopRow>
+                    <LinesContainer id="current-guess-trainlines" background={linesBackground}>
+                        {hasGuess ? (
+                            firstRowLines.map((line) => (
+                                <CurrentLineIcon key={line} src={`/Trainlines/${line}.svg`} alt={line} />
+                            ))
+                        ) : (
+                            <QuestionMarkIcon>?</QuestionMarkIcon>
+                        )}
+                    </LinesContainer>
+                    {hasGuess && !isAnswer && (
+                        <CorrectBadge>To Correct Station</CorrectBadge>
                     )}
-                </LinesContainer>
-            </LinesRow>
-            {hasGuess && !isAnswer && (
-                <CorrectBadge>To Correct Station</CorrectBadge>
-            )}
+                </LinesTopRow>
+                {hasGuess && secondRowLines.length > 0 && (
+                    <LinesContainer background={linesBackground}>
+                        {secondRowLines.map((line) => (
+                            <CurrentLineIcon key={line} src={`/Trainlines/${line}.svg`} alt={line} />
+                        ))}
+                    </LinesContainer>
+                )}
+            </LinesWrapper>
         </Container>
     );
 }

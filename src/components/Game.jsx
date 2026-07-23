@@ -292,12 +292,10 @@ function Game() {
                       }}
                   />
               )}
-                {showMap && (
-                    <Hint 
-                        isOpen={showMap}
-                        onClose={() => setShowMap(false)}
-                    />
-                )}
+                <Hint 
+                    isOpen={showMap}
+                    onClose={() => setShowMap(false)}
+                />
 
                 
             </GameContainer>

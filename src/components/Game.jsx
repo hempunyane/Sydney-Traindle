@@ -13,6 +13,8 @@ import { createGuess } from './Guesses';
 
 const MAX_GUESSES = 8;
 
+const DEMO_ANSWER_OVERRIDE = "Lindfield Station";
+
 // TODO: figure out how mobile top inset works
 const GameContainer = styled.div.attrs(() => ({}))`
   display: flex;
@@ -60,6 +62,8 @@ const getTodayDateString = () => {
 };
 
 const getTodaysAnswer = (stations) => {
+  if (DEMO_ANSWER_OVERRIDE) return DEMO_ANSWER_OVERRIDE;
+
   // Use days since 2000-01-01 as seed
   const today = new Date();
   const start = new Date(2000, 0, 1);

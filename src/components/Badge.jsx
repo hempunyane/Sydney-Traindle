@@ -80,7 +80,6 @@ const BadgeIcon = styled.img`
 
 function Badge({
     badgeIcon,
-    ribbonIcon = "public/Icons/ribbon.svg",
     saturate = true,
     onHoverChange = () => {},
 }) {
@@ -90,12 +89,8 @@ function Badge({
             onMouseEnter={() => onHoverChange(true)}
             onClick={() => onHoverChange(true)}
         >
-            {ribbonIcon && (
-                <>
-                    <LeftRibbon src={ribbonIcon} alt="" />
-                    <RightRibbon src={ribbonIcon} alt="" />
-                </>
-            )}
+            <LeftRibbon src={"public/Icons/ribbon.svg"} alt="" />
+            <RightRibbon src={"public/Icons/ribbon.svg"} alt="" />
             <BadgeCircle>
                 <Shimmer />
                 <BadgeIcon src={badgeIcon} alt="" />

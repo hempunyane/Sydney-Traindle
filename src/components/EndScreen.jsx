@@ -18,7 +18,7 @@ const Drawer = styled(motion.div)`
   border-top-right-radius: 20px;
   box-shadow: 0 -4px 30px rgba(0, 0, 0, 0.4);
   z-index: 1000;
-  padding: 20px;
+  padding: 10px 20px 10px 20px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
@@ -142,9 +142,8 @@ const TimelineContainer = styled.div`
   display: flex;
   gap: 0px;
   margin-bottom: 0px;
-  height: calc(98dvh - 400px);
-  min-height: 300px;
-  max-height: 550px;
+  flex: 1;          /* grows to fill all leftover space in Drawer */
+  min-height: 200px; /* floor so it never gets crushed to nothing on tiny screens */
   z-index: -1;
 `;
 
@@ -241,7 +240,7 @@ const FlagIcon = styled.img`
 const Divider = styled.hr`
   border: none;
   border-top: 1px solid #333;
-  margin: 24px 0;
+  margin: 10px 0;
 `;
 
 const StatsGrid = styled.div`
@@ -249,7 +248,6 @@ const StatsGrid = styled.div`
   grid-template-columns: repeat(3, 1fr);
   gap: 16px;
   text-align: center;
-  margin-top: auto;
 `;
 
 const StatItem = styled.div`
@@ -310,7 +308,7 @@ const MedalScale = styled.div`
 const StatusBadge = styled.div`
   align-self: flex-start;
   min-width: 74px;
-  margin-top: 15px;
+  margin: 20px 0 2px 0;
   height: 10px;
   padding: 5px 4px 4px 4px;
   border-radius: 4px;

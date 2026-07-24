@@ -113,6 +113,7 @@ function Game() {
     const [stats, setStats] = useState(loadStats);
     const [showMap, setShowMap] = useState(false);
     const [showTutorialPrompt, setShowTutorialPrompt] = useState(false);
+    const [hasUsedMap, setHasUsedMap] = useState(false);
 
     const initialized = React.useRef(false);
   
@@ -124,6 +125,7 @@ function Game() {
         const storedGuesses = safeParseJSON(localStorage.getItem('selectedStations'), []);
         const storedHasWon = safeParseJSON(localStorage.getItem('won'), false);
         const storedHasLost = safeParseJSON(localStorage.getItem('lost'), false);
+        const storedMapUsed = safeParseJSON(localStorage.getItem('mapUsed'), false);
 
         const today = getTodayDateString();
         //const mockDate = new Date('2025-02-03');
@@ -134,23 +136,26 @@ function Game() {
 
         // need ot not store answer in local
         if (storedDate === today) {
-            setAnswerStation(todaysAnswer);
-            setGuesses(storedGuesses);
-            setGuessCount(storedGuesses.length);
-            setHasWon(storedHasWon);
-            setHasLost(storedHasLost);
-            setShowTutorialPrompt(!hideTutorialPrompt && !storedHasWon && !storedHasLost);
+          setAnswerStation(todaysAnswer);
+          setGuesses(storedGuesses);
+          setGuessCount(storedGuesses.length);
+          setHasWon(storedHasWon);
+          setHasLost(storedHasLost);
+          setHasUsedMap(storedMapUsed);
+          setShowTutorialPrompt(!hideTutorialPrompt && !storedHasWon && !storedHasLost);
         } else {
             setAnswerStation(todaysAnswer);
             setHasWon(false);
             setHasLost(false);
             setGuesses([]);
+            setHasUsedMap(false);
             setShowTutorialPrompt(!hideTutorialPrompt);
-  
+        
             localStorage.setItem('gameDate', today);
             localStorage.setItem('selectedStations', JSON.stringify([]));
             localStorage.setItem('won', false);
             localStorage.setItem('lost', false);
+            localStorage.setItem('mapUsed', false);
         }
 
     }, []);
@@ -263,7 +268,13 @@ function Game() {
                     suggestions={stations}
                     guessesLeft={MAX_GUESSES - guessCount}
                     onHelp={() => setShowTutorial(true)}
-                    onMap={() => setShowMap(true)}
+                    onMap={() => {
+                      setShowMap(true);
+                      if (!hasLost && !hasWon) {
+                        setHasUsedMap(true);
+                        localStorage.setItem('mapUsed', true);
+                      }
+                    }}
                     disabled={hasWon || hasLost}
                     isMobile={isMobile}
                 />
@@ -286,6 +297,7 @@ function Game() {
                       guesses={getGuessesForDisplay()}
                       maxGuesses={MAX_GUESSES}
                       isWin={hasWon}
+                      mapUsed={hasUsedMap}
                       onSeeGuesses={handleSeeGuesses}
                       onReopen={handleReopenEndScreen}
                       isOpen={isEndScreenOpen}

@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaShareAlt } from 'react-icons/fa';
+import Badge from './Badge';
 
 // Styled components
 const Drawer = styled(motion.div)`
@@ -39,7 +40,7 @@ const ReopenButton = styled(motion.button)`
   background-color: #F6891F;
   color: white;
   border: none;
-  border-radius: 30px;
+  border-radius: 15px;
   padding: 12px 24px;
   font-size: 18px;
   font-weight: bold;
@@ -65,7 +66,7 @@ const ReopenButton = styled(motion.button)`
 const TopBar = styled.div`
   display: flex;
   align-items: center;
-  margin-bottom: 3vh;
+  margin-bottom: 1vh;
   position: relative;
 `;
 
@@ -104,7 +105,6 @@ const ShareIconButton = styled.button`
 const OrangeBox = styled.div`
   width: 100%;
   height: 80px;
-  z-index: 1;
   background-color: #F6891F;
   border-radius: 8px;
   display: flex;
@@ -145,6 +145,7 @@ const TimelineContainer = styled.div`
   height: calc(98dvh - 400px);
   min-height: 300px;
   max-height: 550px;
+  z-index: -1;
 `;
 
 const BarContainer = styled.div`
@@ -269,16 +270,104 @@ const StatLabel = styled.div`
   margin-top: 4px;
 `;
 
+const AnswerAreaWrapper = styled.div`
+  position: relative;
+`;
+
+const MedalRow = styled.div`
+  position: absolute;
+  bottom: -45px;
+  right: 4px;
+  z-index: 5;
+`;
+
+const TrophyMount = styled.div`
+  position: relative;
+  width: 60px;
+`;
+
+const TrophyIcon = styled.img`
+  display: block;
+  width: 100%;
+  height: auto;
+  pointer-events: none;
+  user-select: none;
+`;
+
+const BadgeOnTrophy = styled.div`
+  position: absolute;
+  top: -17px; /* nudges medal up so it sits in/on the trophy cup */
+  left: 50%;
+  transform: translateX(-50%) scale(0.65);
+  transform-origin: top center;
+`;
+
+const MedalScale = styled.div`
+  transform: scale(0.6);
+  transform-origin: bottom right;
+`;
+
+const StatusBadge = styled.div`
+  align-self: flex-start;
+  min-width: 74px;
+  margin-top: 15px;
+  height: 10px;
+  padding: 5px 4px 4px 4px;
+  border-radius: 4px;
+  background-color: #727172;
+  color: #ffffff;
+  font-size: 12px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const MedalPopupOverlay = styled(motion.div)`
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  padding: 0px;
+`;
+
+const MedalPopupCard = styled.div`
+  position: relative;
+  width: 100%;
+  background: #F6891F;
+  padding: 35px 20px 15px;
+  text-align: center;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+`;
+
+const MedalPopupBadgeWrapper = styled.div`
+  position: absolute;
+  top: -25px;
+  left: 50%;
+  transform: translateX(-50%) scale(0.7);
+`;
+
+const MedalPopupText = styled.p`
+  margin: 8px 0 0;
+  color: #ffffff;
+  font-weight: semi-bold;
+  font-size: 16px;
+  line-height: 1.35;
+`;
+
 const EndScreen = ({ 
 	stationName, 
   lastGuessName,
-	guesses,           // array of guess objects with name and stationsAway
-	maxGuesses,        // MAX_GUESSES from Game
+	guesses,
+	maxGuesses,
 	isWin, 
+  mapUsed,
 	onSeeGuesses,
-	stats,             // { played, wins, streak }
-	isOpen,            // Control whether the drawer is open
-	onReopen           // Function to reopen the drawer
+	stats,
+	isOpen,
+	onReopen
 }) => {
 	const totalSlots = maxGuesses - 1; // number of dots
 	const usedCount = guesses.length;
@@ -288,6 +377,7 @@ const EndScreen = ({
 	const timelineRef = React.useRef(null);
 
   const [revealed, setRevealed] = useState(isWin);
+  const [medalHovered, setMedalHovered] = useState(false);
 
   const handleReveal = () => {
     setRevealed(!revealed);
@@ -368,61 +458,74 @@ const EndScreen = ({
 				  <FaShareAlt />
 				</ShareIconButton>
 			  </TopBar>
-  
-			  {isWin ? (
-          <OrangeBox>
-            <StationNameBig>{stationName.replace(/\s*station$/i, '')}</StationNameBig>
-          </OrangeBox>
-        ) : (
-          <AnswerBoxContainer $revealed={revealed} onClick={handleReveal}>
-            <OrangeSliver
-              initial={false}
-              animate={{
-                height: revealed ? '100%' : 10,
-                borderRadius: revealed ? '8px' : '8px 8px 0 0'
-              }}
-              transition={{ type: 'spring', damping: 22, stiffness: 220 }}
-            >
-              <StationNameBig $visible={revealed}>
-                {stationName.replace(/\s*station$/i, '')}
-              </StationNameBig>
-            </OrangeSliver>
-            <GuessLabel $visible={!revealed}>
-              {lastGuessName}
-            </GuessLabel>
-          </AnswerBoxContainer>
-        )}
+        <AnswerAreaWrapper>
+          {isWin ? (
+            <OrangeBox>
+              <StationNameBig>{stationName.replace(/\s*station$/i, '')}</StationNameBig>
+            </OrangeBox>
+          ) : (
+            <AnswerBoxContainer $revealed={revealed} onClick={handleReveal}>
+              <OrangeSliver
+                initial={false}
+                animate={{
+                  height: revealed ? '100%' : 10,
+                  borderRadius: revealed ? '8px' : '8px 8px 0 0'
+                }}
+                transition={{ type: 'spring', damping: 22, stiffness: 220 }}
+              >
+                <StationNameBig $visible={revealed}>
+                  {stationName.replace(/\s*station$/i, '')}
+                </StationNameBig>
+              </OrangeSliver>
+              <GuessLabel $visible={!revealed}>
+                {lastGuessName}
+              </GuessLabel>
+            </AnswerBoxContainer>
+          )}
+
+          <MedalRow>
+              <MedalScale>
+                <Badge
+                  badgeIcon="/Icons/pin.svg"
+                  saturate={isWin && !mapUsed}
+                  onHoverChange={setMedalHovered}
+                />
+              </MedalScale>
+            </MedalRow>
+        </AnswerAreaWrapper>
   
 			  <TimelineContainer ref={timelineRef}>
-				{isWin ? (
-          <BarContainer $usedRatio={(usedCount / totalSlots) * 100}>
-            {Array.from({ length: totalSlots }).map((_, i) => {
-              const top = (i * segmentHeight) + segmentHeight;
-              return <Dot key={i} style={{ top: `${top}px` }} />;
-            })}
-          </BarContainer>
-        ) : (
-          <LossBarContainer>
-            {Array.from({ length: totalSlots }).map((_, i) => {
-              const top = (i * segmentHeight) + segmentHeight;
-              return <Dot key={i} style={{ top: `${top}px` }} />;
-            })}
-          </LossBarContainer>
-        )}
-  
-				<LabelsContainer $height={segmentHeight}>
-				  {items.map((item, i) => (
-					<LabelRow key={i}>
-					  {item === 'flag' ? (
-						<FlagIcon src="/Icons/Flag.svg" alt="unused guess" />
-					  ) : (
-						<span style={{ marginLeft: '16px' }}>{item}</span>
-					  )}
-					</LabelRow>
-				  ))}
-				</LabelsContainer>
+          {isWin ? (
+            <BarContainer $usedRatio={(usedCount / totalSlots) * 100}>
+              {Array.from({ length: totalSlots }).map((_, i) => {
+                const top = (i * segmentHeight) + segmentHeight;
+                return <Dot key={i} style={{ top: `${top}px` }} />;
+              })}
+            </BarContainer>
+          ) : (
+            <LossBarContainer>
+              {Array.from({ length: totalSlots }).map((_, i) => {
+                const top = (i * segmentHeight) + segmentHeight;
+                return <Dot key={i} style={{ top: `${top}px` }} />;
+              })}
+            </LossBarContainer>
+          )}
+    
+          <LabelsContainer $height={segmentHeight}>
+            {items.map((item, i) => (
+            <LabelRow key={i}>
+              {item === 'flag' ? (
+              <FlagIcon src="/Icons/Flag.svg" alt="unused guess" />
+              ) : (
+              <span style={{ marginLeft: '16px' }}>{item}</span>
+              )}
+            </LabelRow>
+            ))}
+          </LabelsContainer>
 			  </TimelineContainer>
-  
+        
+        <StatusBadge>{isWin ? 'Well Done!' : 'Keep Trying!'}</StatusBadge>
+
 			  <Divider />
   
 			  <StatsGrid>
@@ -439,6 +542,41 @@ const EndScreen = ({
 				  <StatLabel>Streak</StatLabel>
 				</StatItem>
 			  </StatsGrid>
+
+        <AnimatePresence>
+          {medalHovered && (
+            <MedalPopupOverlay
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.15 }}
+              onClick={() => setMedalHovered(false)}
+              onMouseLeave={() => setMedalHovered(false)}
+            >
+              <MedalPopupCard onClick={(e) => e.stopPropagation()}>
+                <MedalPopupBadgeWrapper>
+                  <TrophyMount>
+                    <TrophyIcon src="/Icons/trophy.svg" alt="" />
+                      <BadgeOnTrophy>
+                          <Badge
+                              badgeIcon="/Icons/pin.svg"
+                              saturate={isWin && !mapUsed}
+                          />
+                      </BadgeOnTrophy>
+                  </TrophyMount>
+                </MedalPopupBadgeWrapper>
+                <MedalPopupText>
+                  {isWin && !mapUsed ? (
+                      <>You completed Sydney Traindle<br />without using the map!</>
+                    ) : (
+                      <>Complete Sydney Traindle without<br /> using the map to earn this badge!</>
+                  )}
+                </MedalPopupText>
+              </MedalPopupCard>
+            </MedalPopupOverlay>
+          )}
+        </AnimatePresence>
+
 			</Drawer>
         </>
 		  )}

@@ -89,7 +89,7 @@ function Badge({
             onMouseEnter={() => onHoverChange(true)}
             onClick={() => onHoverChange(true)}
         >
-            <LeftRibbon src={"/Icons//ribbon.svg"} alt="" />
+            <LeftRibbon src={"/Icons/ribbon.svg"} alt="" />
             <RightRibbon src={"/Icons/ribbon.svg"} alt="" />
             <BadgeCircle>
                 <Shimmer />

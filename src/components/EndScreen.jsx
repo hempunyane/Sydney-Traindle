@@ -358,6 +358,7 @@ const MedalPopupText = styled.p`
 const EndScreen = ({ 
 	stationName, 
   lastGuessName,
+  guessHistory,
 	guesses,
 	maxGuesses,
 	isWin, 
@@ -408,26 +409,45 @@ const EndScreen = ({
 	  if (stationsAway <= 20) return 'yellow';
 	  return 'red';
 	};
+
+  const getGuessEmoji = (guess, answerStation) => {
+    if (guess.stationsAway === 0) return '🟩'; // correct station
+
+    const answerLines = trainNetwork[answerStation]?.lines ?? [];
+    const guessLines = guess.lines ?? [];
+    const guessSet = new Set(guessLines);
+    const answerSet = new Set(answerLines);
+    const sharesLine = [...guessSet].some((l) => answerSet.has(l));
+
+    const isClose = guess.stationsAway > 0 && guess.stationsAway <= 20;
+
+    if (isClose || sharesLine) return '🟨';
+    return '🟥';
+  };
+
+  const buildShareGrid = (guessHistory, answerStation) => {
+      return guessHistory.map((g) => getGuessEmoji(g, answerStation)).join('\n');
+  };
   
-	const handleShare = () => {
-	  const message = isWin 
-		? `I guessed ${stationName} and won!`
-		: `I couldn't guess ${stationName}. Can you do better?`;
-	  if (navigator.share) {
-		navigator.share({
-		  title: 'Sydney Traindle',
-		  text: message,
-		  url: window.location.href,
-		});
-	  } else {
-		navigator.clipboard.writeText(
-		  `${message} Play Sydney Traindle at ${window.location.href}`
-		);
-		alert('Result copied to clipboard!');
-	  }
-	};
-  
-	const winPercentage = stats.played > 0 
+  const handleShare = () => {
+    const attemptsUsed = guessHistory.length;
+    const attemptsLabel = isWin ? `${attemptsUsed}/${maxGuesses - 1}` : `X/${maxGuesses - 1}`;
+    const grid = buildShareGrid(guessHistory, stationName);
+    const message = `Sydney Traindle ${attemptsLabel}${!mapUsed && isWin ? ' 🚉' : ''}\n${grid}`;
+
+    if (navigator.share) {
+        navigator.share({
+            title: 'Sydney Traindle',
+            text: message,
+            url: window.location.href,
+        });
+    } else {
+        navigator.clipboard.writeText(`${message}\nPlay at ${window.location.href}`);
+        alert('Result copied to clipboard!');
+    }
+  };
+	
+  const winPercentage = stats.played > 0 
 	  ? Math.round((stats.wins / stats.played) * 100) 
 	  : 0;
   

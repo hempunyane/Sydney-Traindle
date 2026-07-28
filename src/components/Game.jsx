@@ -294,6 +294,7 @@ function Game() {
                   <EndScreen
                       stationName={answerStation}
                       lastGuessName={guesses[0]?.stationName?.replace(/\s*station$/i, '')}
+                      guessHistory={[...guesses].reverse()}
                       guesses={getGuessesForDisplay()}
                       maxGuesses={MAX_GUESSES}
                       isWin={hasWon}

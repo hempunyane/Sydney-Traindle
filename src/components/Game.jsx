@@ -13,7 +13,7 @@ import { createGuess } from './Guesses';
 
 const MAX_GUESSES = 8;
 
-const DEMO_ANSWER_OVERRIDE = "Lindfield Station";
+const DEMO_ANSWER_OVERRIDE = "";
 
 // TODO: figure out how mobile top inset works
 const GameContainer = styled.div.attrs(() => ({}))`

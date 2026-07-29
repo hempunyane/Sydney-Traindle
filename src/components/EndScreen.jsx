@@ -427,12 +427,13 @@ const EndScreen = ({
   };
 
   const buildShareGrid = (guessHistory, answerStation) => {
-      return guessHistory.map((g) => getGuessEmoji(g, answerStation)).join('\n');
+    const squares = guessHistory.map((g) => getGuessEmoji(g, answerStation));
+    const track = ['🚂', ...squares].join('.');
   };
   
   const handleShare = () => {
     const attemptsUsed = guessHistory.length;
-    const attemptsLabel = isWin ? `${attemptsUsed}/${maxGuesses - 1}` : `X/${maxGuesses - 1}`;
+    const attemptsLabel = isWin ? `${attemptsUsed}/${maxGuesses}` : `X/${maxGuesses}`;
     const grid = buildShareGrid(guessHistory, stationName);
     const message = `Sydney Traindle ${attemptsLabel}${!mapUsed && isWin ? ' 🚉' : ''}\n${grid}`;
 

@@ -434,8 +434,8 @@ const EndScreen = ({
   const handleShare = () => {
     const attemptsUsed = guessHistory.length;
     const attemptsLabel = isWin ? `${attemptsUsed}/${maxGuesses}` : `X/${maxGuesses}`;
-    const grid = buildShareGrid(guessHistory, stationName);
-    const message = `Sydney Traindle ${attemptsLabel}${!mapUsed && isWin ? ' 🚉' : ''}\n${grid}`;
+    const track = buildShareGrid(guessHistory, stationName);
+    const message = `Sydney Traindle ${attemptsLabel}${!mapUsed && isWin ? ' 🚉' : ''}\n${track}`;
 
     if (navigator.share) {
         navigator.share({

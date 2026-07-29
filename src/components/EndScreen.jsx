@@ -428,7 +428,7 @@ const EndScreen = ({
 
   const buildShareGrid = (guessHistory, answerStation) => {
     const squares = guessHistory.map((g) => getGuessEmoji(g, answerStation));
-    return ['🚂', ...squares].join('·');
+    return ['🚂', ...squares].join('.');
   };
   
   const handleShare = () => {

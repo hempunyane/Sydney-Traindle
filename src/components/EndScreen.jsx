@@ -420,7 +420,7 @@ const EndScreen = ({
     const answerSet = new Set(answerLines);
     const sharesLine = [...guessSet].some((l) => answerSet.has(l));
 
-    const isClose = guess.stationsAway > 0 && guess.stationsAway <= 20;
+    const isClose = guess.stationsAway > 0 && guess.stationsAway <= 15;
 
     if (isClose || sharesLine) return '🟨';
     return '🟥';
@@ -428,7 +428,7 @@ const EndScreen = ({
 
   const buildShareGrid = (guessHistory, answerStation) => {
     const squares = guessHistory.map((g) => getGuessEmoji(g, answerStation));
-    const track = ['🚂', ...squares].join('.');
+    return track = ['🚂', ...squares].join('.');
   };
   
   const handleShare = () => {

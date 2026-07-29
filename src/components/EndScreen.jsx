@@ -360,6 +360,7 @@ const EndScreen = ({
   lastGuessName,
   guessHistory,
 	guesses,
+  trainNetwork,
 	maxGuesses,
 	isWin, 
   mapUsed,

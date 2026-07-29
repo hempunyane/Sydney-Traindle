@@ -61,14 +61,25 @@ const getTodayDateString = () => {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 };
 
+const getDaysSinceEpoch = () => {
+  const now = new Date();
+  const todayUTCMidnight = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+  const epochUTCMidnight = Date.UTC(2000, 0, 1);
+  return Math.floor((todayUTCMidnight - epochUTCMidnight) / 86400000);
+};
+
 const getTodaysAnswer = (stations) => {
   if (DEMO_ANSWER_OVERRIDE) return DEMO_ANSWER_OVERRIDE;
 
-  // Use days since 2000-01-01 as seed
-  const today = new Date();
-  const start = new Date(2000, 0, 1);
-  const daysSinceEpoch = Math.floor((today - start) / 86400000);
+  const daysSinceEpoch = getDaysSinceEpoch();
   const randomIndex = Math.floor(seededRandom(daysSinceEpoch) * stations.length);
+
+  console.log('[Traindle] getTodaysAnswer:', {
+    localNow: new Date().toString(),
+    daysSinceEpoch,
+    randomIndex,
+  });
+
   return stations[randomIndex];
 };
   
@@ -131,6 +142,13 @@ function Game() {
         //const mockDate = new Date('2025-02-03');
         //const today = mockDate.toISOString().split('T')[0];
         const todaysAnswer = getTodaysAnswer(stations);
+
+        console.log('[Traindle] Game init:', {
+          storedDate,
+          today,
+          match: storedDate === today,
+          localTime: new Date().toString(),
+        });
         
         const hideTutorialPrompt = safeParseJSON(localStorage.getItem('hideTutorialPrompt'), false);
 
@@ -296,6 +314,7 @@ function Game() {
                       lastGuessName={guesses[0]?.stationName?.replace(/\s*station$/i, '')}
                       guessHistory={[...guesses].reverse()}
                       guesses={getGuessesForDisplay()}
+                      trainNetwork={stations}
                       maxGuesses={MAX_GUESSES}
                       isWin={hasWon}
                       mapUsed={hasUsedMap}

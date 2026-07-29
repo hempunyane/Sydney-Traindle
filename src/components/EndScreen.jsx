@@ -428,14 +428,14 @@ const EndScreen = ({
 
   const buildShareGrid = (guessHistory, answerStation) => {
     const squares = guessHistory.map((g) => getGuessEmoji(g, answerStation));
-    return ['🚂', ...squares].join('.');
+    return ['🚂-', ...squares].join(' ');
   };
   
   const handleShare = () => {
     const attemptsUsed = guessHistory.length;
     const attemptsLabel = isWin ? `${attemptsUsed}/${maxGuesses}` : `X/${maxGuesses}`;
     const track = buildShareGrid(guessHistory, stationName);
-    const message = `Sydney Traindle ${attemptsLabel}${!mapUsed && isWin ? ' 🚉' : ''}\n${track}`;
+    const message = `Sydney Traindle ${attemptsLabel}${!mapUsed && isWin ? ' 🏅' : ''}\n${track}`;
 
     if (navigator.share) {
         navigator.share({
